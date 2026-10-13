@@ -34,8 +34,12 @@ try {
   const mapping = await run('docker', ['port', container, '5432/tcp'], {}, true)
   const port = mapping.match(/^127\.0\.0\.1:(\d+)$/)?.[1]
   if (!port) throw new Error('No se pudo determinar el puerto local de PostgreSQL de pruebas.')
-  const env = { TEST_DATABASE_URL: `postgresql://perdiu:${password}@127.0.0.1:${port}/perdiu_test`, PERDIU_TEST_CONTAINER: '1' }
+  const env = { TEST_DATABASE_URL: `postgresql://perdiu:${password}@127.0.0.1:${port}/perdiu_test`, PERDIU_TEST_CONTAINER: '1', NODE_ENV: 'test' }
   await run('pnpm', ['exec', 'turbo', 'run', 'test:integration', '--filter=@perdiu/api'], env)
+  if (process.argv.includes('--with-browser')) {
+    await run('pnpm', ['build'], { VITE_API_BASE_URL: '/api' })
+    await run(process.execPath, ['scripts/browser-catalog.mjs'], env)
+  }
 } catch (error) {
   console.error(error.message)
   process.exitCode = 1

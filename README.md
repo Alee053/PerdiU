@@ -6,6 +6,7 @@ PerdiU conecta a personas que perdieron algo con quienes lo encontraron. Este mo
 
 - Node.js 20.19+ (o 22.12+)
 - pnpm 10+
+- Docker con Compose para PostgreSQL local y pruebas de integración.
 
 ## Desarrollo
 
@@ -41,8 +42,24 @@ La interfaz abre directamente en un dashboard. La barra lateral separa Resumen, 
 
 ## Workspaces
 
-- `apps/web`: demo frontend en React, TypeScript y Vite.
+- `apps/web`: interfaz React/TypeScript/Vite con catálogo real y otras secciones de demostración.
 - `apps/api`: catálogo público NestJS con persistencia en PostgreSQL independiente.
 - `packages/contracts`: tipos compartidos para los reportes y perfiles públicos.
 
-La demo no persiste publicaciones ni conecta proveedores externos de autenticación. Los filtros, el cierre de reportes y la publicación funcionan en memoria para presentar los flujos de la primera entrega. El perfil, los reportes y teléfonos precargados son ficticios. Las fotos y tipografías de muestra se cargan desde Unsplash y Google Fonts.
+«Explorar reportes» consulta `GET /reports` de PostgreSQL a través del proxy `/api` de Vite. Distingue carga, error con reintento, catálogo vacío y búsqueda sin coincidencias. No usa datos demo como fallback. La búsqueda y los filtros existentes operan sobre el catálogo recibido; sus consultas del servidor corresponden a S1-02. El detalle abierto desde este catálogo muestra únicamente datos públicos, sin contacto ni controles de propietario. Las imágenes ausentes usan SVG locales por categoría; el mapa ilustrativo pertenece a la demo.
+
+Resumen, Publicar, Mis reportes, Guardados y perfil conservan sus flujos de demostración: no hay Auth ni escrituras persistentes desde la web. Los guardados solo viven en memoria. Los reportes/telefonía demo y el seed son ficticios; el seed incluye un autor «Santiago Demo» para comprobar que su nombre no concede permisos. Las fotos y tipografías demo usan Unsplash y Google Fonts.
+
+## Validación
+
+```bash
+pnpm test
+pnpm typecheck
+pnpm build
+pnpm test:integration
+pnpm test:e2e
+```
+
+Las dos últimas órdenes crean y eliminan un PostgreSQL aislado con credenciales efímeras, sin requerir `.env` ni modificar la base de desarrollo. `test:e2e` también inicia API/web en puertos libres y usa Chromium para comprobar carga, búsqueda, privacidad, error/reintento, vacío, reinicio y móvil. Usa Chromium del sistema (`/usr/bin/chromium`) o define `CHROMIUM_PATH`; si no tienes uno, instala el navegador local de Playwright con `pnpm exec playwright install chromium`. Las capturas quedan en `test-results/`, ignorado por Git.
+
+Consulta [la API](apps/api/README.md) y [la evidencia de S1-01](docs/validation/s1-01.md).
