@@ -6,7 +6,7 @@ type ReportDetailProps = {
   report: Report
   saved: boolean
   onSave: () => void
-  onContact: () => void
+  onContact?: () => void
   onResolve: () => void
   onClose: () => void
   isOwn: boolean
@@ -30,7 +30,7 @@ export function ReportDetail({ report, saved, onSave, onContact, onResolve, onCl
           <div className="poster-row"><span className={'poster-avatar ' + report.color}>{report.initials}</span><span><b>{report.person}</b><small>Miembro de PerdiU</small></span><span className="poster-trust"><ShieldCheck size={14} /> Comunidad</span></div>
           {isOwn && !report.resolved
             ? <button className="resolve-button full-resolve" onClick={onResolve}><CheckCircle2 size={15} /> Marcar como resuelto</button>
-            : <button className="primary-button contact-button" onClick={onContact}><MessageCircle size={17} /> Contactar por WhatsApp <ArrowRight size={15} /></button>}
+            : onContact && <button className="primary-button contact-button" onClick={onContact}><MessageCircle size={17} /> Contactar por WhatsApp <ArrowRight size={15} /></button>}
           <small className="contact-privacy"><LockKeyhole size={12} /> Tu correo no se muestra. Coordina el contacto con cuidado.</small>
         </div>
       </div>

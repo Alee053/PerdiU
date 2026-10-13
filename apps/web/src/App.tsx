@@ -1,8 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useSyncExternalStore } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
 import { CheckCircle2, X } from 'lucide-react'
 import { AppHeader } from './components/layout/AppHeader'
 import { Sidebar } from './components/layout/Sidebar'
+import { createReportsClient } from './catalog/client'
+import { CatalogPresenter, filterCatalog } from './catalog/presenter'
 import { ReportDetail } from './components/reports/ReportDetail'
 import { fallbackReportImage, initialReports } from './data/reports'
 import { ExplorePage } from './pages/ExplorePage'
@@ -12,19 +14,24 @@ import { OverviewPage } from './pages/OverviewPage'
 import { PublishPage } from './pages/PublishPage'
 import { SafetyPage } from './pages/SafetyPage'
 import { SavedPage } from './pages/SavedPage'
-import type { Category, FilterStatus, Report, ReportStatus, ReportView, Section } from './types'
+import type { Category, FilterStatus, Report, ReportStatus, Section } from './types'
 import { normalizeText, sectionLabels } from './utils/text'
 
 function App() {
+  const [catalog] = useState(() => new CatalogPresenter(createReportsClient(import.meta.env.VITE_API_BASE_URL || '/api')))
+  const catalogState = useSyncExternalStore(catalog.subscribe, catalog.getSnapshot)
+  useEffect(() => {
+    void catalog.load()
+    return () => catalog.cancel()
+  }, [catalog])
   const [section, setSection] = useState<Section>('overview')
   const [reports, setReports] = useState<Report[]>(initialReports)
   const [search, setSearch] = useState('')
   const [city, setCity] = useState('Todas las ciudades')
   const [category, setCategory] = useState('Todas las categorías')
   const [status, setStatus] = useState<FilterStatus>('Todos')
-  const [view, setView] = useState<ReportView>('grid')
   const [selectedReport, setSelectedReport] = useState<Report | null>(null)
-  const [saved, setSaved] = useState<number[]>([3])
+  const [saved, setSaved] = useState<string[]>(['demo-3'])
   const [mobileMenu, setMobileMenu] = useState(false)
   const [notice, setNotice] = useState('')
   const [imagePreview, setImagePreview] = useState('')
@@ -40,7 +47,8 @@ function App() {
   }), [reports, search, city, category, status])
 
   const ownReports = reports.filter((report) => report.person === 'Santiago Demo')
-  const savedReports = reports.filter((report) => saved.includes(report.id) && !report.resolved)
+  const catalogReports = useMemo(() => filterCatalog(catalogState.reports, { search, city, category, status }), [catalogState.reports, search, city, category, status])
+  const savedReports = [...catalogState.reports, ...reports].filter((report) => saved.includes(report.id) && !report.resolved)
   const activeReports = reports.filter((report) => !report.resolved)
   const lostCount = activeReports.filter((report) => report.status === 'Perdido').length
   const foundCount = activeReports.filter((report) => report.status === 'Encontrado').length
@@ -58,11 +66,12 @@ function App() {
   }
 
   const contact = (report: Report) => {
+    if (report.source !== 'demo') return
     const message = encodeURIComponent('Hola, vi tu reporte "' + report.title + '" en PerdiU. ¿Podemos coordinar?')
     window.open('https://wa.me/' + report.phone + '?text=' + message, '_blank', 'noopener,noreferrer')
   }
 
-  const toggleSaved = (id: number) => {
+  const toggleSaved = (id: string) => {
     setSaved((items) => items.includes(id) ? items.filter((item) => item !== id) : [...items, id])
     notify(saved.includes(id) ? 'Quitaste este reporte de tus guardados.' : 'Guardaste este reporte para revisarlo después.')
   }
@@ -81,7 +90,8 @@ function App() {
     event.preventDefault()
     const form = new FormData(event.currentTarget)
     const newReport: Report = {
-      id: Date.now(),
+      id: 'demo-' + Date.now(),
+      source: 'demo',
       title: String(form.get('title') || '').trim(),
       description: String(form.get('description') || '').trim(),
       category: String(form.get('category') || 'Objeto') as Category,
@@ -115,11 +125,13 @@ function App() {
   }
 
   const resolveReport = (report: Report) => {
+    if (report.source !== 'demo') return
     setReports((items) => items.map((item) => item.id === report.id ? { ...item, resolved: true } : item))
     notify('Marcaste el reporte como resuelto; ya no aparecerá en las búsquedas.')
   }
 
   const removeReport = (report: Report) => {
+    if (report.source !== 'demo') return
     setReports((items) => items.filter((item) => item.id !== report.id))
     setSaved((items) => items.filter((id) => id !== report.id))
     notify('El reporte se quitó de la lista.')
@@ -131,7 +143,7 @@ function App() {
       <Sidebar
         section={section}
         mobileOpen={mobileMenu}
-        activeCount={activeReports.length}
+        activeCount={catalogState.status === 'ready' ? catalogState.reports.length : 0}
         ownCount={ownReports.length}
         savedCount={saved.length}
         onNavigate={navigate}
@@ -143,7 +155,7 @@ function App() {
         <AppHeader sectionTitle={sectionLabels[section]} onOpenMenu={() => setMobileMenu(true)} onNotify={notify} />
         <main className="content-area">
           {section === 'overview' && <OverviewPage reports={activeReports} lostCount={lostCount} foundCount={foundCount} resolvedCount={resolvedCount} ownCount={ownReports.length} onNavigate={navigate} onOpen={setSelectedReport} saved={saved} onSave={toggleSaved} />}
-          {section === 'explore' && <ExplorePage reports={filteredReports} search={search} setSearch={setSearch} city={city} setCity={setCity} category={category} setCategory={setCategory} status={status} setStatus={setStatus} view={view} setView={setView} resetFilters={resetFilters} onOpen={setSelectedReport} saved={saved} onSave={toggleSaved} onNavigate={navigate} />}
+          {section === 'explore' && <ExplorePage reports={catalogReports} catalogState={catalogState} onRetry={() => void catalog.load()} search={search} setSearch={setSearch} city={city} setCity={setCity} category={category} setCategory={setCategory} status={status} setStatus={setStatus} resetFilters={resetFilters} onOpen={setSelectedReport} saved={saved} onSave={toggleSaved} onNavigate={navigate} />}
           {section === 'map' && <MapPage reports={filteredReports} city={city} setCity={setCity} category={category} setCategory={setCategory} status={status} setStatus={setStatus} onOpen={setSelectedReport} onNavigate={navigate} />}
           {section === 'publish' && <PublishPage postStatus={postStatus} setPostStatus={setPostStatus} imagePreview={imagePreview} setImagePreview={setImagePreview} choosePhoto={choosePhoto} onSubmit={submitReport} />}
           {section === 'my-reports' && <MyReportsPage reports={ownReports} onResolve={resolveReport} onRemove={removeReport} onOpen={setSelectedReport} onNavigate={navigate} />}
@@ -154,7 +166,7 @@ function App() {
       </div>
 
       {notice && <div className="toast"><CheckCircle2 size={17} /> {notice}<button onClick={() => setNotice('')} aria-label="Cerrar aviso"><X size={14} /></button></div>}
-      {selectedReport && <ReportDetail report={selectedReport} saved={saved.includes(selectedReport.id)} onSave={() => toggleSaved(selectedReport.id)} onContact={() => contact(selectedReport)} onResolve={() => resolveReport(selectedReport)} onClose={() => setSelectedReport(null)} isOwn={selectedReport.person === 'Santiago Demo'} />}
+      {selectedReport && <ReportDetail report={selectedReport} saved={saved.includes(selectedReport.id)} onSave={() => toggleSaved(selectedReport.id)} onContact={selectedReport.source === 'demo' ? () => contact(selectedReport) : undefined} onResolve={() => resolveReport(selectedReport)} onClose={() => setSelectedReport(null)} isOwn={selectedReport.source === 'demo' && selectedReport.person === 'Santiago Demo'} />}
     </div>
   )
 }

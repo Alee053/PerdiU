@@ -1,5 +1,5 @@
 import { ChevronRight, LocateFixed, MapPin, PawPrint } from 'lucide-react'
-import type { Report } from '../../types'
+import type { DemoReport, Report } from '../../types'
 
 type MapViewProps = {
   reports: Report[]
@@ -27,7 +27,7 @@ export function MapView({ reports, onOpen }: MapViewProps) {
       <span className="map-park">PLAZA ABAROA</span>
       <span className="map-scale">1 km</span>
       <button className="map-locate" aria-label="Centrar el mapa"><LocateFixed size={17} /></button>
-      {reports.slice(0, 8).map((report, index) => (
+      {reports.filter((report): report is DemoReport => report.source === 'demo').slice(0, 8).map((report, index) => (
         <button
           className={'map-pin ' + (report.status === 'Perdido' ? 'pin-lost' : 'pin-found')}
           key={report.id}
