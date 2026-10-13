@@ -6,6 +6,17 @@ import { assertLocalDatabase } from '../src/config.js'
 import { createPool, migrate, seed } from '../src/database.js'
 import { PostgresReportRepository } from '../src/reports/postgres-repository.js'
 
+async function runDatabaseCommand(command: 'migrate' | 'seed', databaseUrl: string) {
+  const code = await new Promise<number | null>((resolve, reject) => {
+    const child = spawn(process.execPath, ['--import', 'tsx', 'scripts/database.ts', command], {
+      env: { ...process.env, DATABASE_URL: databaseUrl, NODE_ENV: 'test' }, stdio: 'ignore',
+    })
+    child.on('error', reject)
+    child.on('exit', resolve)
+  })
+  assert.equal(code, 0, `El comando ${command} debe preparar la base local.`)
+}
+
 test('catálogo HTTP y repositorio conservan datos reales tras reiniciar, sin información privada', async () => {
   assert.equal(process.env.PERDIU_TEST_CONTAINER, '1', 'Ejecuta pnpm test:integration para usar PostgreSQL aislado.')
   const databaseUrl = process.env.TEST_DATABASE_URL
@@ -16,14 +27,15 @@ test('catálogo HTTP y repositorio conservan datos reales tras reiniciar, sin in
   try {
     await migrate(pool)
     await migrate(pool)
+    await runDatabaseCommand('migrate', databaseUrl)
     assert.deepEqual(await new PostgresReportRepository(pool).list(), [])
     await seed(pool)
-    await seed(pool)
+    await runDatabaseCommand('seed', databaseUrl)
     const records = await new PostgresReportRepository(pool).list()
     assert.deepEqual(records.map(({ id }) => id), [
       '20000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000002',
     ])
-    await pool.query('UPDATE reports SET created_at = $1 WHERE id = $2', ['2026-01-01T12:00:00Z', records[0]!.id])
+    await pool.query('UPDATE reports SET created_at = created_at - interval \'1 second\' WHERE id = $1', [records[0]!.id])
     await seed(pool)
 
     const start = async () => {
@@ -44,6 +56,13 @@ test('catálogo HTTP y repositorio conservan datos reales tras reiniciar, sin in
     app = undefined
     endpoint = await start()
     assert.deepEqual(await (await fetch(endpoint)).json(), catalog)
+
+    await pool.query('UPDATE reports SET created_at = $1 WHERE id = $2', ['2026-10-12T12:00:00.123100Z', records[0]!.id])
+    await pool.query('UPDATE reports SET created_at = $1 WHERE id = $2', ['2026-10-12T12:00:00.123900Z', records[1]!.id])
+    const precise = await (await fetch(endpoint)).json()
+    assert.deepEqual(precise.map((report: { id: string; createdAt: string }) => [report.id, report.createdAt]), [
+      [records[1]!.id, '2026-10-12T12:00:00.123900Z'], [records[0]!.id, '2026-10-12T12:00:00.123100Z'],
+    ])
 
     await pool.query('ALTER TABLE reports RENAME TO unavailable_reports')
     try {

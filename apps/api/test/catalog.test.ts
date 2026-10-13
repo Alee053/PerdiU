@@ -41,3 +41,9 @@ test('la proyección pública excluye contacto, identidad privada y claves de al
     author: { id: 'owner-1', displayName: 'Autor de prueba' }, imageUrls: [],
   }])
 })
+
+test('el catálogo conserva el orden de PostgreSQL dentro de un mismo milisegundo', async () => {
+  const reports = [record('a', { createdAt: '2026-10-10T12:00:00.123100Z' }), record('b', { createdAt: '2026-10-10T12:00:00.123900Z' })]
+  const result = await new ListReports({ list: async () => reports }).execute()
+  assert.deepEqual(result.map(({ id }) => id), ['b', 'a'])
+})
