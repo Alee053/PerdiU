@@ -1,17 +1,26 @@
-/** Shared API shapes for the web app and the future PerdiU API. */
-export type ReportStatus = 'lost' | 'found' | 'resolved'
+/** Shared report model; ownership is the verified Auth subject, never a display name. */
+export type ReportType = 'lost' | 'found'
+export type ReportState = 'active' | 'resolved'
 export type ReportCategory = 'pet' | 'object' | 'document'
 
-export interface ReportSummary {
+export interface ReportData {
   id: string
+  ownerId: string
   title: string
   description: string
-  status: ReportStatus
+  type: ReportType
+  state: ReportState
   category: ReportCategory
   city: string
   zone: string
-  imageUrls: string[]
+  incidentDate: string
   createdAt: string
+}
+
+/** Public allowlist: private contact and storage keys have no place in this DTO. */
+export interface ReportSummary extends Omit<ReportData, 'ownerId'> {
+  author: PublicProfile
+  imageUrls: string[]
 }
 
 export interface PublicProfile {

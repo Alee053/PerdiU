@@ -1,6 +1,6 @@
 # PerdiU
 
-PerdiU conecta a personas que perdieron algo con quienes lo encontraron. Este repositorio usa pnpm workspaces y separa la aplicación web, el espacio de la futura API y los contratos compartidos.
+PerdiU conecta a personas que perdieron algo con quienes lo encontraron. Este monorepo usa pnpm workspaces y Turborepo para coordinar la web, la API y los contratos compartidos.
 
 ## Requisitos
 
@@ -15,6 +15,8 @@ pnpm dev
 ```
 
 La web corre en `http://localhost:5173`. También puedes usar `pnpm dev:web`.
+
+`pnpm build` y `pnpm typecheck` recorren los workspaces con Turbo, compilando primero sus dependencias. `pnpm test` ejecuta las suites disponibles. La caché es local; los procesos de desarrollo y las pruebas de integración no se cachean.
 
 La interfaz abre directamente en un dashboard. La barra lateral separa Resumen, Explorar reportes, Mapa, Publicar reporte, Mis reportes, Guardados y Seguridad y privacidad.
 
