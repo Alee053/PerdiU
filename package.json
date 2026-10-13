@@ -9,6 +9,11 @@
     "build": "turbo run build",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
+    "test:integration": "node scripts/verify-catalog.mjs",
+    "db:up": "docker compose up -d --wait",
+    "db:down": "docker compose down",
+    "db:migrate": "pnpm --filter @perdiu/api db:migrate",
+    "db:seed": "pnpm --filter @perdiu/api db:seed",
     "preview": "pnpm --filter @perdiu/web preview"
   },
   "devDependencies": {
