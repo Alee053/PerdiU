@@ -2,6 +2,10 @@
 
 PerdiU conecta a personas que perdieron algo con quienes lo encontraron. Este monorepo usa pnpm workspaces y Turborepo para coordinar la web, la API y los contratos compartidos.
 
+## Colaboración y documentación
+
+Para abrir una PR, seguir [CONTRIBUTING.md](CONTRIBUTING.md): nombres de ramas/commits/PRs, templates por tipo, vínculo `Closes`/`Refs`, estados de GitHub Projects y revisión. Los [documentos de producto](docs/product/README.md) reúnen el informe y mapa de historias en formatos revisables en Git. El trabajo vigente está en [PerdiU Backlog](https://github.com/users/Alee053/projects/5).
+
 ## Requisitos
 
 - Node.js 20.19+ (o 22.12+)

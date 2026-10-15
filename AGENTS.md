@@ -1,5 +1,9 @@
 # Agent skills
 
+## Contributions
+
+Before naming a branch/PR, choosing a template, linking an issue/project, or preparing commits, read [CONTRIBUTING.md](CONTRIBUTING.md). Describe changes and verification; omit AI/tool attribution and co-author trailers from PRs, commits and project evidence.
+
 ## Issue tracker
 
 For issue and project work, use GitHub through `gh`; read [docs/agents/issue-tracker.md](docs/agents/issue-tracker.md).
