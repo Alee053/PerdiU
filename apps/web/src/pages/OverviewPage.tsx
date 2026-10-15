@@ -10,10 +10,10 @@ type OverviewPageProps = {
   foundCount: number
   resolvedCount: number
   ownCount: number
-  saved: number[]
+  saved: string[]
   onNavigate: (section: Section) => void
   onOpen: (report: Report) => void
-  onSave: (id: number) => void
+  onSave: (id: string) => void
 }
 
 export function OverviewPage({ reports, lostCount, foundCount, resolvedCount, ownCount, saved, onNavigate, onOpen, onSave }: OverviewPageProps) {

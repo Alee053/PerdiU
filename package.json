@@ -4,9 +4,21 @@
   "version": "0.1.0",
   "packageManager": "pnpm@10.29.2",
   "scripts": {
-    "dev": "pnpm --filter @perdiu/web dev",
+    "dev": "turbo run dev",
     "dev:web": "pnpm --filter @perdiu/web dev",
-    "build": "pnpm --filter @perdiu/web build",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:integration": "node scripts/verify-catalog.mjs",
+    "test:e2e": "node scripts/verify-catalog.mjs --with-browser",
+    "db:up": "docker compose up -d --wait",
+    "db:down": "docker compose down",
+    "db:migrate": "pnpm --filter @perdiu/api db:migrate",
+    "db:seed": "pnpm --filter @perdiu/api db:seed",
     "preview": "pnpm --filter @perdiu/web preview"
+  },
+  "devDependencies": {
+    "playwright": "^1.64.0",
+    "turbo": "^2.11.7"
   }
 }

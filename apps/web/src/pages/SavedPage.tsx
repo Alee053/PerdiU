@@ -6,10 +6,10 @@ import { ReportCard } from '../components/reports/ReportCard'
 
 type SavedPageProps = {
   reports: Report[]
-  onSave: (id: number) => void
+  onSave: (id: string) => void
   onOpen: (report: Report) => void
   onNavigate: (section: Section) => void
-  saved: number[]
+  saved: string[]
 }
 
 export function SavedPage({ reports, onSave, onOpen, onNavigate, saved }: SavedPageProps) {

@@ -5,17 +5,18 @@ import { ReportCard } from './ReportCard'
 
 type ReportCollectionProps = {
   reports: Report[]
-  saved: number[]
-  onSave: (id: number) => void
+  saved: string[]
+  onSave: (id: string) => void
   onOpen: (report: Report) => void
   onNavigate: (section: Section) => void
   onClear: () => void
   emptyCopy: string
+  emptyTitle?: string
 }
 
-export function ReportCollection({ reports, saved, onSave, onOpen, onNavigate, onClear, emptyCopy }: ReportCollectionProps) {
+export function ReportCollection({ reports, saved, onSave, onOpen, onNavigate, onClear, emptyCopy, emptyTitle = 'No encontramos reportes' }: ReportCollectionProps) {
   if (!reports.length) {
-    return <EmptyState title="No encontramos reportes" description={emptyCopy} action="Limpiar filtros" onAction={onClear} />
+    return <EmptyState title={emptyTitle} description={emptyCopy} action="Limpiar filtros" onAction={onClear} />
   }
 
   return (
