@@ -8,7 +8,7 @@
     "dev:web": "pnpm --filter @perdiu/web dev",
     "build": "turbo run build",
     "typecheck": "turbo run typecheck",
-    "test": "turbo run test",
+    "test": "turbo run test && pnpm test:repo",
     "test:integration": "node scripts/verify-catalog.mjs",
     "test:e2e": "node scripts/verify-catalog.mjs --with-browser",
     "db:up": "docker compose up -d --wait",
@@ -16,11 +16,21 @@
     "db:migrate": "turbo run db:migrate --filter=@perdiu/database",
     "db:seed": "turbo run db:seed --filter=@perdiu/database",
     "preview": "pnpm --filter @perdiu/web preview",
-    "check:boundaries": "node scripts/check-boundaries.mjs"
+    "check:boundaries": "node scripts/check-boundaries.mjs",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "test:repo": "node --test scripts/test/*.test.mjs",
+    "check:docs": "node scripts/check-docs.mjs",
+    "verify": "pnpm format:check && pnpm check:docs && pnpm check:boundaries && pnpm typecheck && pnpm test && pnpm build"
   },
   "devDependencies": {
+    "@perdiu/database": "workspace:*",
     "playwright": "^1.64.0",
-    "turbo": "^2.11.7",
-    "@perdiu/database": "workspace:*"
+    "prettier": "3.9.10",
+    "turbo": "^2.11.7"
+  },
+  "engines": {
+    "node": ">=24 <25",
+    "pnpm": ">=10 <11"
   }
 }

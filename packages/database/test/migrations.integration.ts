@@ -10,7 +10,11 @@ import { createPool } from '../src/pool.js'
 import { migrate } from '../src/maintenance.js'
 
 test('migraciones descubiertas se aplican en orden, una sola vez y con rollback de fallos', async () => {
-  assert.equal(process.env.PERDIU_TEST_CONTAINER, '1', 'Usa pnpm test:integration con PostgreSQL aislado.')
+  assert.equal(
+    process.env.PERDIU_TEST_CONTAINER,
+    '1',
+    'Usa pnpm test:integration con PostgreSQL aislado.',
+  )
   const databaseUrl = process.env.TEST_DATABASE_URL
   assert.ok(databaseUrl)
   assertLocalDatabase(databaseUrl)
@@ -22,15 +26,27 @@ test('migraciones descubiertas se aplican en orden, una sola vez y con rollback 
     await setup.query('CREATE SCHEMA migration_checks')
     pool = new Pool({ connectionString: databaseUrl, options: '-c search_path=migration_checks' })
     await writeFile(join(directory, '002_second.sql'), "INSERT INTO steps VALUES ('second');")
-    await writeFile(join(directory, '001_first.sql'), "CREATE TABLE steps (name text); INSERT INTO steps VALUES ('first');")
+    await writeFile(
+      join(directory, '001_first.sql'),
+      "CREATE TABLE steps (name text); INSERT INTO steps VALUES ('first');",
+    )
     await migrate(pool, source)
-    assert.deepEqual((await pool.query('SELECT name FROM steps ORDER BY name')).rows, [{ name: 'first' }, { name: 'second' }])
+    assert.deepEqual((await pool.query('SELECT name FROM steps ORDER BY name')).rows, [
+      { name: 'first' },
+      { name: 'second' },
+    ])
     await migrate(pool, source)
     assert.equal((await pool.query('SELECT * FROM steps')).rowCount, 2)
     await writeFile(join(directory, '003_third.sql'), "INSERT INTO steps VALUES ('third');")
     await migrate(pool, source)
-    assert.deepEqual((await pool.query('SELECT version FROM schema_migrations ORDER BY version')).rows, [{ version: 1 }, { version: 2 }, { version: 3 }])
-    await writeFile(join(directory, '004_failure.sql'), "INSERT INTO steps VALUES ('rollback'); SELECT * FROM missing_migration_table;")
+    assert.deepEqual(
+      (await pool.query('SELECT version FROM schema_migrations ORDER BY version')).rows,
+      [{ version: 1 }, { version: 2 }, { version: 3 }],
+    )
+    await writeFile(
+      join(directory, '004_failure.sql'),
+      "INSERT INTO steps VALUES ('rollback'); SELECT * FROM missing_migration_table;",
+    )
     await assert.rejects(migrate(pool, source))
     assert.equal((await pool.query('SELECT * FROM steps')).rowCount, 3)
     assert.equal((await pool.query('SELECT * FROM schema_migrations')).rowCount, 3)

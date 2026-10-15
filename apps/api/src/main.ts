@@ -14,6 +14,10 @@ try {
     throw new Error()
   }
 } catch (error) {
-  console.error(error instanceof ConfigurationError || error instanceof DatabaseConfigurationError ? error.message : 'No se pudo iniciar la API. Revisa la configuración y la disponibilidad de PostgreSQL/puerto.')
+  console.error(
+    error instanceof ConfigurationError || error instanceof DatabaseConfigurationError
+      ? error.message
+      : 'No se pudo iniciar la API. Revisa la configuración y la disponibilidad de PostgreSQL/puerto.',
+  )
   process.exitCode = 1
 }

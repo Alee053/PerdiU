@@ -28,21 +28,41 @@ export function ReportFilters({
       <label className="filter-select">
         <MapPin size={15} />
         <select value={city} onChange={(event) => setCity(event.target.value)} aria-label="Ciudad">
-          <option>Todas las ciudades</option><option>La Paz</option><option>Cochabamba</option><option>Santa Cruz</option>
+          <option>Todas las ciudades</option>
+          <option>La Paz</option>
+          <option>Cochabamba</option>
+          <option>Santa Cruz</option>
         </select>
         <ChevronDown size={13} />
       </label>
       <label className="filter-select">
         <PawPrint size={15} />
-        <select value={category} onChange={(event) => setCategory(event.target.value)} aria-label="Categoría">
-          <option>Todas las categorías</option><option>Mascota</option><option>Objeto</option><option>Documentos</option>
+        <select
+          value={category}
+          onChange={(event) => setCategory(event.target.value)}
+          aria-label="Categoría"
+        >
+          <option>Todas las categorías</option>
+          <option>Mascota</option>
+          <option>Objeto</option>
+          <option>Documentos</option>
         </select>
         <ChevronDown size={13} />
       </label>
       {showStatus && (
-        <div className={'status-tabs' + (compact ? ' compact' : '')} role="tablist" aria-label="Estado del reporte">
+        <div
+          className={'status-tabs' + (compact ? ' compact' : '')}
+          role="tablist"
+          aria-label="Estado del reporte"
+        >
           {(['Todos', 'Perdido', 'Encontrado'] as FilterStatus[]).map((item) => (
-            <button key={item} className={status === item ? 'selected' : ''} aria-selected={status === item} role="tab" onClick={() => setStatus(item)}>
+            <button
+              key={item}
+              className={status === item ? 'selected' : ''}
+              aria-selected={status === item}
+              role="tab"
+              onClick={() => setStatus(item)}
+            >
               {compact ? item : item === 'Todos' ? 'Todos' : item + 's'}
             </button>
           ))}

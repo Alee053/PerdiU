@@ -27,14 +27,17 @@ export async function createApplication(databaseUrl: string) {
   let database: Database | undefined
   try {
     database = await openDatabase(databaseUrl)
-    const app = await NestFactory.create({
-      module: AppModule,
-      controllers: [ReportsController],
-      providers: [
-        { provide: ListReports, useValue: new ListReports(database.reports) },
-        { provide: 'DATABASE_LIFECYCLE', useValue: { onModuleDestroy: database.close } },
-      ],
-    }, { logger: false, abortOnError: false })
+    const app = await NestFactory.create(
+      {
+        module: AppModule,
+        controllers: [ReportsController],
+        providers: [
+          { provide: ListReports, useValue: new ListReports(database.reports) },
+          { provide: 'DATABASE_LIFECYCLE', useValue: { onModuleDestroy: database.close } },
+        ],
+      },
+      { logger: false, abortOnError: false },
+    )
     app.enableShutdownHooks()
     return app
   } catch {

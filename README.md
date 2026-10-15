@@ -8,18 +8,19 @@ Para abrir una PR, seguir [CONTRIBUTING.md](CONTRIBUTING.md): nombres de ramas/c
 
 ## Requisitos
 
-- Node.js 20.19+ (o 22.12+)
-- pnpm 10+
+- Node.js 24 LTS, versión de [`.node-version`](.node-version), para desarrollo y CI. Usar el gestor de versiones preferido sin cambiar la configuración global de otros proyectos.
+- pnpm 10.29.2, fijado en `packageManager`.
 - Docker con Compose para PostgreSQL local y pruebas de integración.
+- `gh` autenticado para issues, Projects y PRs; Chromium/Playwright para aceptación. En Windows, usar WSL2 con acceso al daemon Docker; CI corre en Linux.
 
 ## Desarrollo
 
 ```bash
-pnpm install
+pnpm install --frozen-lockfile
 cp .env.example .env
 ```
 
-En `.env`, define una contraseña local en `POSTGRES_PASSWORD` y una `DATABASE_URL` con el formato `postgresql://perdiu:<contraseña-codificada>@127.0.0.1:5433/perdiu_dev`. Codifica los caracteres especiales de la contraseña para la URL. El archivo está ignorado por Git; las credenciales de BD pertenecen exclusivamente a la API.
+En `.env`, define una contraseña local en `POSTGRES_PASSWORD` y una `DATABASE_URL` con el formato `postgresql://perdiu:<contraseña-codificada>@127.0.0.1:5433/perdiu_dev`. Codifica los caracteres especiales de la contraseña para la URL. El archivo está ignorado por Git; las credenciales de BD pertenecen a procesos de servidor y mantenimiento. La [guía de servicios](docs/services.md) detalla configuración actual y proveedores pendientes; no necesitas Auth ni R2 para el catálogo.
 
 ```bash
 pnpm db:up
@@ -30,7 +31,7 @@ pnpm dev
 
 La web corre en `http://localhost:5173` y la API en `http://127.0.0.1:3000`. También puedes usar `pnpm dev:web` con la API iniciada por separado. `pnpm db:down` detiene PostgreSQL conservando su volumen.
 
-`pnpm build` y `pnpm typecheck` recorren los workspaces con Turbo, compilando primero sus dependencias. `pnpm test` ejecuta las suites disponibles. La caché es local; los procesos de desarrollo y las pruebas de integración no se cachean.
+`pnpm build` y `pnpm typecheck` recorren los workspaces con Turbo, compilando primero sus dependencias. `pnpm test` ejecuta las suites disponibles. `pnpm verify` reúne formato, documentación/skills, arquitectura, tipos, unitarias y build. La caché es local; los procesos de desarrollo y las pruebas de integración no se cachean.
 
 La interfaz abre directamente en un dashboard. La barra lateral separa Resumen, Explorar reportes, Mapa, Publicar reporte, Mis reportes, Guardados y Seguridad y privacidad.
 
@@ -61,14 +62,17 @@ Resumen, Publicar, Mis reportes, Guardados y perfil conservan sus flujos de demo
 ## Validación
 
 ```bash
-pnpm test
-pnpm typecheck
-pnpm build
-pnpm check:boundaries
+pnpm verify
 pnpm test:integration
 pnpm test:e2e
 ```
 
+La [guía de TDD y pruebas](docs/testing.md) explica selección de interfaces, ciclos red/green y comandos focalizados. `test:e2e` ya incluye integración/build: no hace falta ejecutar ambos íntegros en cada entrega. `pnpm format` aplica el estilo; `pnpm format:check` lo verifica. No se requiere ESLint ni otro framework de pruebas.
+
 Las dos últimas órdenes crean y eliminan un PostgreSQL aislado con credenciales efímeras, sin requerir `.env` ni modificar la base de desarrollo. `test:e2e` también inicia API/web en puertos libres y usa Chromium para comprobar carga, búsqueda sin tildes, filtros combinados, limpieza, límite, privacidad, error/reintento, vacío, reinicio y recorridos de móvil/escritorio. Usa Chromium del sistema (`/usr/bin/chromium`) o define `CHROMIUM_PATH`; si no tienes uno, instala el navegador local de Playwright con `pnpm exec playwright install chromium`. Las capturas quedan en `test-results/`, ignorado por Git.
 
 Consulta [la API](apps/api/README.md), [la evidencia de S1-01](docs/validation/s1-01.md) y [la de S1-02](docs/validation/s1-02.md).
+
+## Instrucciones del repositorio
+
+[AGENTS.md](AGENTS.md) activa cuatro [skills locales y mantenibles](docs/agent-workflow.md). Están versionadas en `.agents/skills/` y remiten a guías canónicas; cualquier cambio que invalide sus instrucciones debe actualizarlas en la misma PR. CI valida estructura y enlaces; el equipo revisa significado y resultados.

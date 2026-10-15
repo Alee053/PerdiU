@@ -1,4 +1,5 @@
 <!-- Guía: CONTRIBUTING.md. Completar los campos y quitar instrucciones. -->
+
 ## Propósito
 
 <!-- Qué información faltaba o estaba desactualizada y quién la utilizará. -->
@@ -23,3 +24,9 @@
 ## Pendientes
 
 <!-- Decisiones aún abiertas, activación tras merge u otros límites; No aplica + motivo. -->
+
+## Impacto documental
+
+- [ ] Revisé el mapa de mantenimiento y actualicé documentación/skills afectadas en esta PR, o expliqué por qué no hay impacto.
+
+<!-- Arquitectura, contratos, comandos, pruebas, servicios y convenciones. Ver docs/agent-workflow.md. -->

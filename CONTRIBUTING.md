@@ -15,42 +15,42 @@ Una corrección documental pequeña puede ir sin issue nueva si explica su prop�
 
 Usar descripciones breves en español. Los prefijos técnicos y nombres de ramas van en minúsculas; las ramas usan ASCII y guiones.
 
-| Elemento | Formato | Ejemplo |
-| --- | --- | --- |
-| Historia de sprint | `[S1-02] <capacidad del usuario>` | `[S1-02] Buscar y filtrar reportes` |
-| Rama de sprint | `<tipo>/s1-02-<descripcion>` | `feat/s1-02-busqueda-reportes` |
-| Rama fuera de sprint | `<tipo>/<issue>-<descripcion>` | `docs/123-guia-contribucion` |
-| Rama documental sin issue | `docs/<descripcion>` | `docs/plantillas-pr` |
-| PR de sprint | `<tipo>(<scope>): <resultado> [S1-02]` | `feat(web): buscar reportes por texto [S1-02]` |
-| PR fuera de sprint | `<tipo>(<scope>): <resultado>` | `docs(repo): definir el flujo de contribución` |
-| Commit | `<tipo>(<scope>): <cambio> (#<issue>)` | `fix(api): conservar el orden de creación (#1)` |
+| Elemento                  | Formato                                | Ejemplo                                         |
+| ------------------------- | -------------------------------------- | ----------------------------------------------- |
+| Historia de sprint        | `[S1-02] <capacidad del usuario>`      | `[S1-02] Buscar y filtrar reportes`             |
+| Rama de sprint            | `<tipo>/s1-02-<descripcion>`           | `feat/s1-02-busqueda-reportes`                  |
+| Rama fuera de sprint      | `<tipo>/<issue>-<descripcion>`         | `docs/123-guia-contribucion`                    |
+| Rama documental sin issue | `docs/<descripcion>`                   | `docs/plantillas-pr`                            |
+| PR de sprint              | `<tipo>(<scope>): <resultado> [S1-02]` | `feat(web): buscar reportes por texto [S1-02]`  |
+| PR fuera de sprint        | `<tipo>(<scope>): <resultado>`         | `docs(repo): definir el flujo de contribución`  |
+| Commit                    | `<tipo>(<scope>): <cambio> (#<issue>)` | `fix(api): conservar el orden de creación (#1)` |
 
 El scope y el número de issue son opcionales cuando no aplican; el identificador del sprint no reemplaza el vínculo real con una issue. Mantener los nombres de ramas y commits históricos: estas convenciones se aplican a trabajo nuevo.
 
-| Tipo | Uso |
-| --- | --- |
-| `feat` | Comportamiento nuevo. |
-| `fix` | Corrección de un fallo. |
-| `docs` | Documentación. |
-| `refactor` | Reorganización que conserva comportamiento. |
-| `test` | Pruebas y herramientas de verificación. |
-| `build` | Dependencias y herramientas de compilación. |
-| `ci` | Automatización de integración continua. |
-| `chore` | Mantenimiento que no encaja en los anteriores. |
+| Tipo       | Uso                                            |
+| ---------- | ---------------------------------------------- |
+| `feat`     | Comportamiento nuevo.                          |
+| `fix`      | Corrección de un fallo.                        |
+| `docs`     | Documentación.                                 |
+| `refactor` | Reorganización que conserva comportamiento.    |
+| `test`     | Pruebas y herramientas de verificación.        |
+| `build`    | Dependencias y herramientas de compilación.    |
+| `ci`       | Automatización de integración continua.        |
+| `chore`    | Mantenimiento que no encaja en los anteriores. |
 
-Scopes habituales: `web`, `api`, `contracts`, `catalog`, `repo`. Nombrar el área afectada sin inventar etiquetas para cada archivo.
+Scopes habituales: `web`, `api`, `contracts`, `catalog`, `database`, `repo`. Nombrar el área afectada sin inventar etiquetas para cada archivo.
 
 Crear commits progresivos que representen pasos coherentes y verificables. Evitar mensajes como «cambios», «final», «fix stuff» o la narración de la conversación. No reescribir commits ya compartidos sin acuerdo.
 
 ## Elegir un template de PR
 
-| Template | Cuándo usarlo |
-| --- | --- |
-| [Predeterminado](.github/pull_request_template.md) | Cambio general o pequeño. |
-| [Funcionalidad](.github/PULL_REQUEST_TEMPLATE/feature.md) | Historia con comportamiento nuevo y criterios de aceptación. |
-| [Corrección](.github/PULL_REQUEST_TEMPLATE/bugfix.md) | Fallo reproducido, causa demostrada y regresión cubierta. |
-| [Documentación](.github/PULL_REQUEST_TEMPLATE/docs.md) | Guías, requisitos y fuentes documentales. |
-| [Mantenimiento](.github/PULL_REQUEST_TEMPLATE/maintenance.md) | Dependencias, infraestructura, refactors y tooling. |
+| Template                                                      | Cuándo usarlo                                                |
+| ------------------------------------------------------------- | ------------------------------------------------------------ |
+| [Predeterminado](.github/pull_request_template.md)            | Cambio general o pequeño.                                    |
+| [Funcionalidad](.github/PULL_REQUEST_TEMPLATE/feature.md)     | Historia con comportamiento nuevo y criterios de aceptación. |
+| [Corrección](.github/PULL_REQUEST_TEMPLATE/bugfix.md)         | Fallo reproducido, causa demostrada y regresión cubierta.    |
+| [Documentación](.github/PULL_REQUEST_TEMPLATE/docs.md)        | Guías, requisitos y fuentes documentales.                    |
+| [Mantenimiento](.github/PULL_REQUEST_TEMPLATE/maintenance.md) | Dependencias, infraestructura, refactors y tooling.          |
 
 Los templates estarán disponibles automáticamente en GitHub cuando lleguen a la rama predeterminada. El archivo predeterminado se carga al abrir una PR; las variantes se eligen con `--template` en `gh` o con `?template=feature.md` en la URL de comparación. No asumir un selector de variantes en la interfaz. [Referencia de GitHub](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/creating-a-pull-request-template-for-your-repository).
 
@@ -119,13 +119,13 @@ gh issue view 2 --repo Alee053/PerdiU --json number,state,projectItems
 
 ## Estados del tablero
 
-| Estado existente | Cuándo corresponde |
-| --- | --- |
-| `Backlog` | Propuesta pendiente de refinar o priorizar. |
-| `Ready` | Historia entendida, criterios verificables y dependencias identificadas. |
-| `In progress` | Implementación o corrección en curso; una PR Draft sigue aquí. |
-| `In review` | PR lista, verificaciones relevantes ejecutadas y revisión pendiente. |
-| `Done` | Cambio integrado en `master`, aceptado y con verificaciones pertinentes completas. |
+| Estado existente | Cuándo corresponde                                                                 |
+| ---------------- | ---------------------------------------------------------------------------------- |
+| `Backlog`        | Propuesta pendiente de refinar o priorizar.                                        |
+| `Ready`          | Historia entendida, criterios verificables y dependencias identificadas.           |
+| `In progress`    | Implementación o corrección en curso; una PR Draft sigue aquí.                     |
+| `In review`      | PR lista, verificaciones relevantes ejecutadas y revisión pendiente.               |
+| `Done`           | Cambio integrado en `master`, aceptado y con verificaciones pertinentes completas. |
 
 Si la revisión descubre trabajo pendiente, volver a `In progress`. Registrar los bloqueos en la issue y sus relaciones de dependencia. Tras integrar, comprobar el cierre y el estado del tablero: las automatizaciones de Projects pueden estar o no configuradas.
 
@@ -140,13 +140,27 @@ Pedir revisión a otra persona. El autor explica las decisiones y atiende hallaz
 
 Actualizar documentación y ejemplos si cambia una interfaz, configuración, migración o procedimiento de arranque. Las migraciones nuevas no reescriben migraciones aplicadas; las mutaciones se verifican en bases locales aisladas. Cambios de datos compartidos, permisos o despliegue requieren autorización específica.
 
-## Qué falta acordar antes de ampliar el equipo
+## Política de integración y calidad
 
-Estas son propuestas, no configuraciones activadas:
+`master` requiere PR, checks `quality` y `acceptance` aprobados y una aprobación humana de otra persona, incluidos administradores. Los checks se ejecutan sobre la revisión actual; un push nuevo invalida aprobaciones anteriores. Mantener resueltas las conversaciones, actualizar la rama respecto a `master` y no usar force-push ni eliminar la rama protegida. No hay bypass permanente de emergencia: cualquier excepción necesita una decisión explícita del equipo. El repositorio conserva los métodos de merge existentes; no reescribir historial compartido. Después de un merge, usar `git pull --ff-only` desde un `master` limpio y crear la siguiente rama desde la base actualizada.
 
-1. **Protección de `master`:** exigir PR, aprobación de otra persona y checks; evitar pushes directos y force-push. Acordar quién puede integrar y las excepciones de emergencia.
-2. **CI y estilo:** ejecutar pruebas, typecheck y build en PRs; añadir integración aislada y decidir formatter/linter antes de hacerlos obligatorios. `.editorconfig` ya unifica indentación y finales de línea.
-3. **Responsabilidad:** asignar responsables/revisores de web, API y contratos; añadir `CODEOWNERS` cuando estén confirmados, con especial cuidado de las interfaces compartidas.
-4. **Criterios de entrega:** acordar Definition of Ready/Done, tamaño de PR, política de merge y cómo registrar pruebas manuales, bloqueos y cambios de alcance.
-5. **Contratos y datos:** acordar formatos de error HTTP, validación de entrada, convenciones de nombres/fechas, evolución de DTOs, migraciones y datos ficticios. Mantener una guía de acceso a entornos y gestión de secretos sin guardar sus valores.
-6. **Issues y versiones:** templates de historias/bugs, etiquetas y prioridades compartidas, ADRs para decisiones de arquitectura y una política de versiones/changelog cuando haya entregas desplegadas.
+CI tiene dos trabajos con nombres estables: `quality` ejecuta `pnpm verify`, y `acceptance` instala Chromium y ejecuta `pnpm test:e2e` (ya incluye integración/build). No usa secretos de proveedores ni el evento `pull_request_target`. Los workflows usan permisos mínimos, acciones fijadas a commits, cancelación de ejecuciones obsoletas y artefactos de capturas limitados. La configuración vive en `.github/workflows/ci.yml`; comprobar los resultados reales de la PR, no solo que exista el archivo.
+
+El formatter único es Prettier, fijado en el lockfile; respetar su configuración y EditorConfig. `pnpm format` escribe y `pnpm format:check` verifica. Las migraciones aplicadas y transcripciones históricas conservan su contenido; no reformatearlas. TypeScript y `check:boundaries` completan las comprobaciones estáticas actuales. No añadir otro linter o framework de tests sin una necesidad concreta.
+
+## Ready, Done y documentación
+
+Una issue está **Ready** cuando tiene responsable, comportamiento/problema observable, criterios comprobables, alcance, dependencias y enfoque de pruebas. Usar los formularios de historia, bug o mantenimiento. Para historias de sprint conservar `[Sx-yy]`; otras issues pueden usar `bug: <resultado>` o `chore: <objetivo>`. Las issues creadas con `gh` deben aportar los mismos campos; verificar manualmente la tarjeta en Projects en lugar de asumir autoasignación.
+
+Un cambio está listo para **In review** cuando cumple los criterios, tiene regresiones y validación proporcionales, diff revisado, documentación/skills sincronizadas y PR vinculada. La issue pasa a **Done** al integrarse, aceptarse y comprobar cierre/estado del proyecto. Los bloqueos reales y las pruebas no ejecutadas se explican; las PRs incompletas permanecen Draft y en progreso.
+
+Para comportamiento nuevo o correcciones, seguir [TDD y verificación](docs/testing.md): interfaces públicas, un ejemplo red→green cada vez y refactor con pruebas verdes. Caracterización inicialmente verde es válida para comportamiento existente. En la PR, registrar el fallo inicial/regresión o caracterización, sin inventar evidencia. Evitar cuotas de cobertura y duplicación de cada caso en todos los niveles.
+
+Antes de entregar, aplicar la [sincronización de instrucciones](docs/agent-workflow.md). El [mapa de impacto](docs/maintenance-map.json) indica documentos/skills a contrastar; actualizar instrucciones y referencias obsoletas dentro de la misma PR, o justificar ausencia de impacto. `pnpm check:docs --since origin/master` informa qué revisar. El check estructural no sustituye la revisión del contenido.
+
+## Seguimientos acordados
+
+- Asignar CODEOWNERS cuando el equipo confirme responsables por área; por ahora se pide revisión a otra persona con acceso, sin inventar ownership.
+- Documentar Auth/R2, callbacks y accesos al implementar sus historias, según [servicios](docs/services.md). No provisionar recursos ni añadir credenciales por completar plantillas.
+- Registrar ADRs para decisiones de arquitectura significativas; no exigirlos para cada cambio pequeño.
+- Definir releases/changelog cuando existan entregas versionadas. La política de merge uniforme podrá acordarse después; los commits de trabajo siguen siendo progresivos.

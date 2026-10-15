@@ -7,7 +7,8 @@ export class PostgresReportRepository implements ReportRepository {
 
   async list(query: ReportQuery = {}): Promise<ReportRecord[]> {
     // SQL restricts work; the case of use also enforces catalog invariants for other adapters.
-    const result = await this.pool.query<ReportRecord>(`
+    const result = await this.pool.query<ReportRecord>(
+      `
       SELECT r.id, r.owner_id AS "ownerId", r.type, r.state, r.category,
         r.title, r.description, r.city, r.zone,
         to_char(r.incident_date, 'YYYY-MM-DD') AS "incidentDate",
@@ -24,8 +25,20 @@ export class PostgresReportRepository implements ReportRepository {
         AND ($5::text IS NULL OR r.city = $5)
       ORDER BY r.created_at DESC, r.id ASC
       LIMIT $6
-    `, ['active', (query.q ?? '').trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es'),
-      query.type ?? null, query.category ?? null, query.city ?? null, REPORT_RESULT_LIMIT])
+    `,
+      [
+        'active',
+        (query.q ?? '')
+          .trim()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .toLocaleLowerCase('es'),
+        query.type ?? null,
+        query.category ?? null,
+        query.city ?? null,
+        REPORT_RESULT_LIMIT,
+      ],
+    )
     return result.rows
   }
 }

@@ -10,7 +10,8 @@ try {
   const databaseUrl = readDatabaseUrl(process.env)
   assertLocalDatabase(databaseUrl)
   const command = process.argv[2]
-  if (command !== 'migrate' && command !== 'seed') throw new DatabaseConfigurationError('Usa migrate o seed.')
+  if (command !== 'migrate' && command !== 'seed')
+    throw new DatabaseConfigurationError('Usa migrate o seed.')
   const pool = createPool(databaseUrl)
   try {
     await (command === 'migrate' ? migrate(pool) : seed(pool))
@@ -19,6 +20,10 @@ try {
     await pool.end()
   }
 } catch (error) {
-  console.error(error instanceof DatabaseConfigurationError ? error.message : 'No se pudo preparar la base local. Revisa PostgreSQL y aplica primero la migración.')
+  console.error(
+    error instanceof DatabaseConfigurationError
+      ? error.message
+      : 'No se pudo preparar la base local. Revisa PostgreSQL y aplica primero la migración.',
+  )
   process.exitCode = 1
 }

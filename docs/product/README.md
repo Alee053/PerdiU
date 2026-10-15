@@ -1,12 +1,12 @@
 # Documentación de producto
 
-| Documento | Uso |
-| --- | --- |
-| [Informe de producto](informe.md) | Visión, alcance original, comunidad, riesgos, infraestructura y 18 historias con criterios; tabla anónima de pruebas de usuario. |
-| [Mapa de historias](mapa-de-historias.md) | Releases originales por actividad, legibles en GitHub. |
-| [CSV original](../USM_LostFoundBolivia.csv) | Fuente editable del mapa; se conserva su nombre histórico. |
-| [Especificación histórica de la demo](demo-historica.md) | Referencia de la entrega frontend; no define el alcance actual del backend. |
-| [PerdiU Backlog](https://github.com/users/Alee053/projects/5) | Historias y estados vigentes del equipo. |
+| Documento                                                     | Uso                                                                                                                              |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| [Informe de producto](informe.md)                             | Visión, alcance original, comunidad, riesgos, infraestructura y 18 historias con criterios; tabla anónima de pruebas de usuario. |
+| [Mapa de historias](mapa-de-historias.md)                     | Releases originales por actividad, legibles en GitHub.                                                                           |
+| [CSV original](../USM_LostFoundBolivia.csv)                   | Fuente editable del mapa; se conserva su nombre histórico.                                                                       |
+| [Especificación histórica de la demo](demo-historica.md)      | Referencia de la entrega frontend; no define el alcance actual del backend.                                                      |
+| [PerdiU Backlog](https://github.com/users/Alee053/projects/5) | Historias y estados vigentes del equipo.                                                                                         |
 
 ## Fuentes y actualización
 
