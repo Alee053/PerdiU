@@ -14,6 +14,8 @@ Before domain changes, read [docs/agents/domain.md](docs/agents/domain.md).
 
 ## Engineering
 
+Before moving code between workspaces, adding a dependency, or changing persistence, read [docs/architecture.md](docs/architecture.md). Validate workspace dependencies with `pnpm check:boundaries`.
+
 Keep the catalog model, case of use, SQL adapter and React presenter separate. Public report responses use an explicit allowlist and exclude private contact and storage data. Ownership requires verified identity; a display name is presentation only.
 
 Run database mutation and integration scripts only against isolated local development/test databases. Preserve unrelated working-tree changes and keep credentials in ignored environment files.

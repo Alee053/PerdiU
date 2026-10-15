@@ -8,7 +8,7 @@ NestJS con PostgreSQL independiente y consultas parametrizadas mediante `pg`. El
 
 El autor público tiene ID (sujeto de Auth), nombre y foto opcional. Los contactos están en tablas privadas; ni esos datos ni claves de almacenamiento se consultan para el catálogo. Una lista vacía devuelve `200 []`; fallos de consulta devuelven `503` con mensaje seguro en español. No hay autenticación ni endpoints de escritura en esta historia.
 
-El controlador HTTP traduce el resultado/error, `ListReports` aplica los invariantes y la proyección pública, y `PostgresReportRepository` adapta SQL al modelo. El SQL filtra y ordena para reducir trabajo; el caso de uso conserva los invariantes al sustituir ese adapter.
+La API se ocupa de HTTP, validación y composición. `ListReports`, en `@perdiu/catalog`, aplica los invariantes y la proyección pública. `PostgresReportRepository`, en `@perdiu/database`, adapta SQL al modelo. La API abre la base mediante `openDatabase` y registra su cierre al apagar. El SQL filtra y ordena para reducir trabajo; el caso de uso conserva los invariantes al sustituir ese adapter. Consulta las [responsabilidades por workspace](../../docs/architecture.md).
 
 ### Buscar y filtrar
 
@@ -29,6 +29,6 @@ Requiere PostgreSQL con codificación UTF8 (incluida en el contenedor del proyec
 
 ## Desarrollo y validación
 
-Sigue el README de la raíz para preparar PostgreSQL y ejecutar `pnpm dev`. `pnpm --filter @perdiu/api start` ejecuta el build; `pnpm --filter @perdiu/api test` prueba reglas de catálogo/configuración. Los contratos deben estar compilados antes de ejecutar comandos aislados del workspace.
+Sigue el README de la raíz para preparar PostgreSQL y ejecutar `pnpm dev`. `pnpm --filter @perdiu/api start` ejecuta el build existente; `pnpm --filter @perdiu/api test` prueba configuración HTTP. Las reglas de catálogo se prueban en `@perdiu/catalog`, y configuración/migraciones en `@perdiu/database`. Usa los comandos raíz para que Turbo compile las dependencias antes de pruebas y desarrollo.
 
-`pnpm test:integration` crea un contenedor PostgreSQL desechable con puerto y contraseña efímeros, verifica el catálogo y elimina únicamente ese contenedor. No requiere una cuenta externa ni modifica la BD de desarrollo. Las migraciones/seed solo aceptan una BD local `perdiu_*dev` o `perdiu_*test`, fuera de `NODE_ENV=production`; el seed usa IDs fijos y `ON CONFLICT DO NOTHING` para conservar registros existentes.
+`pnpm test:integration` crea un contenedor PostgreSQL desechable con puerto y contraseña efímeros, verifica migraciones y catálogo y elimina únicamente ese contenedor. No requiere una cuenta externa ni modifica la BD de desarrollo. Los comandos raíz de migraciones/seed pertenecen a `@perdiu/database`; sus restricciones y evolución se documentan en [su guía](../../packages/database/README.md).

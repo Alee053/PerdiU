@@ -15,7 +15,8 @@
     "db:down": "docker compose down",
     "db:migrate": "turbo run db:migrate --filter=@perdiu/database",
     "db:seed": "turbo run db:seed --filter=@perdiu/database",
-    "preview": "pnpm --filter @perdiu/web preview"
+    "preview": "pnpm --filter @perdiu/web preview",
+    "check:boundaries": "node scripts/check-boundaries.mjs"
   },
   "devDependencies": {
     "playwright": "^1.64.0",

@@ -49,6 +49,10 @@ La interfaz abre directamente en un dashboard. La barra lateral separa Resumen, 
 - `apps/web`: interfaz React/TypeScript/Vite con catálogo real y otras secciones de demostración.
 - `apps/api`: catálogo público NestJS con persistencia en PostgreSQL independiente.
 - `packages/contracts`: tipos compartidos para los reportes y perfiles públicos.
+- `packages/catalog`: modelo, puerto de repositorio y caso de uso del catálogo, independientes de frameworks y de la base de datos.
+- `packages/database`: PostgreSQL, conexión, adapter SQL, migraciones, seed y CLI local. Consulta su [guía](packages/database/README.md).
+
+La [guía de arquitectura](docs/architecture.md) define responsabilidades y dependencias. `pnpm check:boundaries` comprueba imports entre workspaces y sus exports públicos. Los paquetes compartidos se recompilan en modo watch con `pnpm dev`.
 
 «Explorar reportes» consulta `GET /reports` de PostgreSQL a través del proxy `/api` de Vite. La búsqueda por título/descripción ignora mayúsculas y tildes y se combina en el servidor con tipo, categoría y ciudad. Cada consulta devuelve hasta 50 reportes activos, del más reciente al más antiguo; al alcanzar el límite, la interfaz sugiere ajustar los filtros. «Limpiar filtros» restablece el catálogo y los controles; las consultas anteriores se cancelan y sus respuestas se descartan. Distingue carga, error con reintento de la misma búsqueda, catálogo vacío y búsqueda sin coincidencias con acceso a publicación. No usa datos demo como fallback. El detalle abierto desde este catálogo muestra únicamente datos públicos, sin contacto ni controles de propietario. Las imágenes ausentes usan SVG locales por categoría; el mapa ilustrativo pertenece a la demo.
 
@@ -60,6 +64,7 @@ Resumen, Publicar, Mis reportes, Guardados y perfil conservan sus flujos de demo
 pnpm test
 pnpm typecheck
 pnpm build
+pnpm check:boundaries
 pnpm test:integration
 pnpm test:e2e
 ```
