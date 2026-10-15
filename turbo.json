@@ -41,7 +41,8 @@
     },
     "test:integration": {
       "dependsOn": [
-        "build"
+        "build",
+        "^test:integration"
       ],
       "cache": false,
       "passThroughEnv": [

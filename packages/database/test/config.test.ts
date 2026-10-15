@@ -21,3 +21,14 @@ test('las operaciones de BD rechazan parámetros que pueden sustituir el destino
     'postgresql://test-user@127.0.0.1/perdiu_dev?database=shared',
   ]) assert.throws(() => assertLocalDatabase(url), { message: 'Esta operación requiere una base PerdiU local terminada en dev o test, fuera de producción.' })
 })
+
+test('las operaciones de BD rechazan producción incluso con una URL local', () => {
+  const previous = process.env.NODE_ENV
+  try {
+    process.env.NODE_ENV = 'production'
+    assert.throws(() => assertLocalDatabase('postgresql://test-user@127.0.0.1/perdiu_dev'))
+  } finally {
+    if (previous === undefined) delete process.env.NODE_ENV
+    else process.env.NODE_ENV = previous
+  }
+})

@@ -22,7 +22,9 @@
     "typecheck": "tsc -p tsconfig.check.json",
     "test": "tsx --test test/*.test.ts",
     "db:migrate": "node dist/cli.js migrate",
-    "db:seed": "node dist/cli.js seed"
+    "db:seed": "node dist/cli.js seed",
+    "test:integration": "tsx --test test/*.integration.ts",
+    "dev": "tsc -p tsconfig.json --watch --preserveWatchOutput"
   },
   "dependencies": {
     "@perdiu/catalog": "workspace:*",

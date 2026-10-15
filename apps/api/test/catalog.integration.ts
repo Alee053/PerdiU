@@ -9,8 +9,9 @@ import { assertLocalDatabase } from '@perdiu/database/config'
 
 async function runDatabaseCommand(command: 'migrate' | 'seed', databaseUrl: string) {
   const code = await new Promise<number | null>((resolve, reject) => {
-    const child = spawn(process.execPath, ['../../packages/database/dist/cli.js', command], {
-      env: { ...process.env, DATABASE_URL: databaseUrl, NODE_ENV: 'test' }, stdio: 'ignore',
+    const child = spawn('pnpm', [`db:${command}`], {
+      cwd: new URL('../../../', import.meta.url),
+      env: { ...process.env, DATABASE_URL: databaseUrl, NODE_ENV: 'test', PORT: 'invalid-http-port' }, stdio: 'ignore',
     })
     child.on('error', reject)
     child.on('exit', resolve)

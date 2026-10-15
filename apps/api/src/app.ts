@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 import { Controller, Get, Inject, Module, Query, ServiceUnavailableException } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
-import { createPool, PostgresReportRepository } from '@perdiu/database'
+import { openDatabase, type Database } from '@perdiu/database'
 import { ListReports } from '@perdiu/catalog'
 import { parseReportQuery } from './reports/query.js'
 
@@ -24,21 +24,21 @@ class ReportsController {
 class AppModule {}
 
 export async function createApplication(databaseUrl: string) {
-  const pool = createPool(databaseUrl)
+  let database: Database | undefined
   try {
-    await pool.query('SELECT 1')
+    database = await openDatabase(databaseUrl)
     const app = await NestFactory.create({
       module: AppModule,
       controllers: [ReportsController],
       providers: [
-        { provide: ListReports, useValue: new ListReports(new PostgresReportRepository(pool)) },
-        { provide: 'DATABASE_LIFECYCLE', useValue: { onModuleDestroy: () => pool.end() } },
+        { provide: ListReports, useValue: new ListReports(database.reports) },
+        { provide: 'DATABASE_LIFECYCLE', useValue: { onModuleDestroy: database.close } },
       ],
     }, { logger: false, abortOnError: false })
     app.enableShutdownHooks()
     return app
   } catch {
-    await pool.end()
+    await database?.close()
     throw new Error('No se pudo conectar o iniciar la API. Revisa PostgreSQL y DATABASE_URL.')
   }
 }
