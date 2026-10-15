@@ -1,4 +1,5 @@
 <!-- Guía: CONTRIBUTING.md. Completar los campos y quitar instrucciones. -->
+
 ## Motivo y resultado
 
 <!-- Necesidad concreta del mantenimiento, refactor, dependencia o infraestructura. -->
@@ -14,8 +15,8 @@
 ## Validación
 
 | Comando o comportamiento comprobado | Resultado |
-| --- | --- |
-| | |
+| ----------------------------------- | --------- |
+|                                     |           |
 
 ## Compatibilidad y recuperación
 

@@ -1,5 +1,8 @@
 export const normalizeText = (value: string) =>
-  value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('es')
+  value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase('es')
 
 export const sectionLabels: Record<import('../types').Section, string> = {
   overview: 'Resumen',

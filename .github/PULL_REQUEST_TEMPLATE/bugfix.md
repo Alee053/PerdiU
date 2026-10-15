@@ -1,4 +1,5 @@
 <!-- Guía: CONTRIBUTING.md. Completar los campos y quitar instrucciones. -->
+
 ## Fallo y reproducción
 
 <!-- Pasos, resultado esperado y resultado observado; datos ficticios. -->
@@ -16,8 +17,8 @@ Closes #<numero>
 ## Validación
 
 | Reproducción o regresión comprobada | Resultado antes/después |
-| --- | --- |
-| | |
+| ----------------------------------- | ----------------------- |
+|                                     |                         |
 
 ## Riesgos y pendientes
 

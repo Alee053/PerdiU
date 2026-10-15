@@ -15,28 +15,28 @@ Una corrección documental pequeña puede ir sin issue nueva si explica su prop�
 
 Usar descripciones breves en español. Los prefijos técnicos y nombres de ramas van en minúsculas; las ramas usan ASCII y guiones.
 
-| Elemento | Formato | Ejemplo |
-| --- | --- | --- |
-| Historia de sprint | `[S1-02] <capacidad del usuario>` | `[S1-02] Buscar y filtrar reportes` |
-| Rama de sprint | `<tipo>/s1-02-<descripcion>` | `feat/s1-02-busqueda-reportes` |
-| Rama fuera de sprint | `<tipo>/<issue>-<descripcion>` | `docs/123-guia-contribucion` |
-| Rama documental sin issue | `docs/<descripcion>` | `docs/plantillas-pr` |
-| PR de sprint | `<tipo>(<scope>): <resultado> [S1-02]` | `feat(web): buscar reportes por texto [S1-02]` |
-| PR fuera de sprint | `<tipo>(<scope>): <resultado>` | `docs(repo): definir el flujo de contribución` |
-| Commit | `<tipo>(<scope>): <cambio> (#<issue>)` | `fix(api): conservar el orden de creación (#1)` |
+| Elemento                  | Formato                                | Ejemplo                                         |
+| ------------------------- | -------------------------------------- | ----------------------------------------------- |
+| Historia de sprint        | `[S1-02] <capacidad del usuario>`      | `[S1-02] Buscar y filtrar reportes`             |
+| Rama de sprint            | `<tipo>/s1-02-<descripcion>`           | `feat/s1-02-busqueda-reportes`                  |
+| Rama fuera de sprint      | `<tipo>/<issue>-<descripcion>`         | `docs/123-guia-contribucion`                    |
+| Rama documental sin issue | `docs/<descripcion>`                   | `docs/plantillas-pr`                            |
+| PR de sprint              | `<tipo>(<scope>): <resultado> [S1-02]` | `feat(web): buscar reportes por texto [S1-02]`  |
+| PR fuera de sprint        | `<tipo>(<scope>): <resultado>`         | `docs(repo): definir el flujo de contribución`  |
+| Commit                    | `<tipo>(<scope>): <cambio> (#<issue>)` | `fix(api): conservar el orden de creación (#1)` |
 
 El scope y el número de issue son opcionales cuando no aplican; el identificador del sprint no reemplaza el vínculo real con una issue. Mantener los nombres de ramas y commits históricos: estas convenciones se aplican a trabajo nuevo.
 
-| Tipo | Uso |
-| --- | --- |
-| `feat` | Comportamiento nuevo. |
-| `fix` | Corrección de un fallo. |
-| `docs` | Documentación. |
-| `refactor` | Reorganización que conserva comportamiento. |
-| `test` | Pruebas y herramientas de verificación. |
-| `build` | Dependencias y herramientas de compilación. |
-| `ci` | Automatización de integración continua. |
-| `chore` | Mantenimiento que no encaja en los anteriores. |
+| Tipo       | Uso                                            |
+| ---------- | ---------------------------------------------- |
+| `feat`     | Comportamiento nuevo.                          |
+| `fix`      | Corrección de un fallo.                        |
+| `docs`     | Documentación.                                 |
+| `refactor` | Reorganización que conserva comportamiento.    |
+| `test`     | Pruebas y herramientas de verificación.        |
+| `build`    | Dependencias y herramientas de compilación.    |
+| `ci`       | Automatización de integración continua.        |
+| `chore`    | Mantenimiento que no encaja en los anteriores. |
 
 Scopes habituales: `web`, `api`, `contracts`, `catalog`, `repo`. Nombrar el área afectada sin inventar etiquetas para cada archivo.
 
@@ -44,13 +44,13 @@ Crear commits progresivos que representen pasos coherentes y verificables. Evita
 
 ## Elegir un template de PR
 
-| Template | Cuándo usarlo |
-| --- | --- |
-| [Predeterminado](.github/pull_request_template.md) | Cambio general o pequeño. |
-| [Funcionalidad](.github/PULL_REQUEST_TEMPLATE/feature.md) | Historia con comportamiento nuevo y criterios de aceptación. |
-| [Corrección](.github/PULL_REQUEST_TEMPLATE/bugfix.md) | Fallo reproducido, causa demostrada y regresión cubierta. |
-| [Documentación](.github/PULL_REQUEST_TEMPLATE/docs.md) | Guías, requisitos y fuentes documentales. |
-| [Mantenimiento](.github/PULL_REQUEST_TEMPLATE/maintenance.md) | Dependencias, infraestructura, refactors y tooling. |
+| Template                                                      | Cuándo usarlo                                                |
+| ------------------------------------------------------------- | ------------------------------------------------------------ |
+| [Predeterminado](.github/pull_request_template.md)            | Cambio general o pequeño.                                    |
+| [Funcionalidad](.github/PULL_REQUEST_TEMPLATE/feature.md)     | Historia con comportamiento nuevo y criterios de aceptación. |
+| [Corrección](.github/PULL_REQUEST_TEMPLATE/bugfix.md)         | Fallo reproducido, causa demostrada y regresión cubierta.    |
+| [Documentación](.github/PULL_REQUEST_TEMPLATE/docs.md)        | Guías, requisitos y fuentes documentales.                    |
+| [Mantenimiento](.github/PULL_REQUEST_TEMPLATE/maintenance.md) | Dependencias, infraestructura, refactors y tooling.          |
 
 Los templates estarán disponibles automáticamente en GitHub cuando lleguen a la rama predeterminada. El archivo predeterminado se carga al abrir una PR; las variantes se eligen con `--template` en `gh` o con `?template=feature.md` en la URL de comparación. No asumir un selector de variantes en la interfaz. [Referencia de GitHub](https://docs.github.com/en/communities/using-templates-to-encourage-useful-issues-and-pull-requests/creating-a-pull-request-template-for-your-repository).
 
@@ -119,13 +119,13 @@ gh issue view 2 --repo Alee053/PerdiU --json number,state,projectItems
 
 ## Estados del tablero
 
-| Estado existente | Cuándo corresponde |
-| --- | --- |
-| `Backlog` | Propuesta pendiente de refinar o priorizar. |
-| `Ready` | Historia entendida, criterios verificables y dependencias identificadas. |
-| `In progress` | Implementación o corrección en curso; una PR Draft sigue aquí. |
-| `In review` | PR lista, verificaciones relevantes ejecutadas y revisión pendiente. |
-| `Done` | Cambio integrado en `master`, aceptado y con verificaciones pertinentes completas. |
+| Estado existente | Cuándo corresponde                                                                 |
+| ---------------- | ---------------------------------------------------------------------------------- |
+| `Backlog`        | Propuesta pendiente de refinar o priorizar.                                        |
+| `Ready`          | Historia entendida, criterios verificables y dependencias identificadas.           |
+| `In progress`    | Implementación o corrección en curso; una PR Draft sigue aquí.                     |
+| `In review`      | PR lista, verificaciones relevantes ejecutadas y revisión pendiente.               |
+| `Done`           | Cambio integrado en `master`, aceptado y con verificaciones pertinentes completas. |
 
 Si la revisión descubre trabajo pendiente, volver a `In progress`. Registrar los bloqueos en la issue y sus relaciones de dependencia. Tras integrar, comprobar el cierre y el estado del tablero: las automatizaciones de Projects pueden estar o no configuradas.
 

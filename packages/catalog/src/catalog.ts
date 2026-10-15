@@ -13,16 +13,27 @@ export class ListReports {
   async execute(query: ReportQuery = {}): Promise<ReportSummary[]> {
     return (await this.repository.list(query))
       .filter((report) => report.state === 'active')
-      .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)
-        || microsecondRemainder(b.createdAt) - microsecondRemainder(a.createdAt)
-        || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
+      .sort(
+        (a, b) =>
+          Date.parse(b.createdAt) - Date.parse(a.createdAt) ||
+          microsecondRemainder(b.createdAt) - microsecondRemainder(a.createdAt) ||
+          (a.id < b.id ? -1 : a.id > b.id ? 1 : 0),
+      )
       .slice(0, REPORT_RESULT_LIMIT)
       .map((report) => ({
-        id: report.id, title: report.title, description: report.description,
-        type: report.type, state: report.state, category: report.category,
-        city: report.city, zone: report.zone, incidentDate: report.incidentDate, createdAt: report.createdAt,
+        id: report.id,
+        title: report.title,
+        description: report.description,
+        type: report.type,
+        state: report.state,
+        category: report.category,
+        city: report.city,
+        zone: report.zone,
+        incidentDate: report.incidentDate,
+        createdAt: report.createdAt,
         author: {
-          id: report.author.id, displayName: report.author.displayName,
+          id: report.author.id,
+          displayName: report.author.displayName,
           ...(report.author.photoUrl ? { photoUrl: report.author.photoUrl } : {}),
         },
         imageUrls: [...report.imageUrls],

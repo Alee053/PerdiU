@@ -18,6 +18,7 @@ export function loadEnvironment() {
 export function readConfig(env: NodeJS.ProcessEnv): ApiConfig {
   const databaseUrl = readDatabaseUrl(env)
   const port = Number(env.PORT ?? 3000)
-  if (!Number.isInteger(port) || port < 1 || port > 65535) throw new ConfigurationError('PORT debe ser un entero entre 1 y 65535.')
+  if (!Number.isInteger(port) || port < 1 || port > 65535)
+    throw new ConfigurationError('PORT debe ser un entero entre 1 y 65535.')
   return { databaseUrl, port, host: env.HOST || '127.0.0.1' }
 }

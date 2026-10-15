@@ -14,12 +14,12 @@ La API se ocupa de HTTP, validación y composición. `ListReports`, en `@perdiu/
 
 `GET /reports?q=camara&type=lost&category=object&city=La%20Paz` combina todos los filtros con AND. Los parámetros son opcionales; se recortan espacios exteriores y los valores vacíos equivalen a omitir el filtro.
 
-| Parámetro | Valores y límites |
-| --- | --- |
-| `q` | Hasta 200 unidades UTF-16. Frase literal contenida en título **o** descripción; ignora mayúsculas y marcas diacríticas Unicode U+0300–U+036F mediante NFD. No busca en ciudad, zona ni autor. |
-| `type` | `lost` o `found`. |
-| `category` | `pet`, `object` o `document`. |
-| `city` | Hasta 100 unidades UTF-16. Coincidencia exacta con la ciudad almacenada, por ejemplo `La Paz`. |
+| Parámetro  | Valores y límites                                                                                                                                                                             |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `q`        | Hasta 200 unidades UTF-16. Frase literal contenida en título **o** descripción; ignora mayúsculas y marcas diacríticas Unicode U+0300–U+036F mediante NFD. No busca en ciudad, zona ni autor. |
+| `type`     | `lost` o `found`.                                                                                                                                                                             |
+| `category` | `pet`, `object` o `document`.                                                                                                                                                                 |
+| `city`     | Hasta 100 unidades UTF-16. Coincidencia exacta con la ciudad almacenada, por ejemplo `La Paz`.                                                                                                |
 
 Parámetros desconocidos, repetidos, estructurados, demasiado largos, caracteres de control o enumeraciones inválidas devuelven `400` con mensaje seguro. Las longitudes se comprueban antes de recortar espacios. Las comillas, `%`, `_` y barras en `q` se buscan literalmente; todos los valores SQL se parametrizan.
 

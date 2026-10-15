@@ -6,21 +6,52 @@ export type CatalogState =
   | { status: 'ready'; reports: CatalogReport[] }
   | { status: 'error'; reports: CatalogReport[]; message: string }
 
-export const categoryImages = { Mascota: '/images/pet.svg', Objeto: '/images/object.svg', Documentos: '/images/document.svg' }
-const categories: Record<ReportCategory, Category> = { pet: 'Mascota', object: 'Objeto', document: 'Documentos' }
-const categoryValues: Partial<Record<string, ReportCategory>> = { Mascota: 'pet', Objeto: 'object', Documentos: 'document' }
+export const categoryImages = {
+  Mascota: '/images/pet.svg',
+  Objeto: '/images/object.svg',
+  Documentos: '/images/document.svg',
+}
+const categories: Record<ReportCategory, Category> = {
+  pet: 'Mascota',
+  object: 'Objeto',
+  document: 'Documentos',
+}
+const categoryValues: Partial<Record<string, ReportCategory>> = {
+  Mascota: 'pet',
+  Objeto: 'object',
+  Documentos: 'document',
+}
 
 function presentReport(report: ReportSummary): CatalogReport {
   const category = categories[report.category]
   const name = report.author.displayName
   return {
-    id: report.id, source: 'catalog', title: report.title, description: report.description,
-    category, status: report.type === 'lost' ? 'Perdido' : 'Encontrado', city: report.city, zone: report.zone,
-    date: new Intl.DateTimeFormat('es-BO', { dateStyle: 'medium', timeZone: 'UTC' }).format(new Date(report.incidentDate + 'T00:00:00Z')),
-    posted: new Intl.DateTimeFormat('es-BO', { dateStyle: 'medium', timeZone: 'America/La_Paz' }).format(new Date(report.createdAt)),
-    image: report.imageUrls[0] || categoryImages[category], person: name,
-    initials: name.trim().split(/\s+/).slice(0, 2).map((part) => part[0]).join('').toLocaleUpperCase('es'),
-    color: 'lavender', resolved: report.state === 'resolved',
+    id: report.id,
+    source: 'catalog',
+    title: report.title,
+    description: report.description,
+    category,
+    status: report.type === 'lost' ? 'Perdido' : 'Encontrado',
+    city: report.city,
+    zone: report.zone,
+    date: new Intl.DateTimeFormat('es-BO', { dateStyle: 'medium', timeZone: 'UTC' }).format(
+      new Date(report.incidentDate + 'T00:00:00Z'),
+    ),
+    posted: new Intl.DateTimeFormat('es-BO', {
+      dateStyle: 'medium',
+      timeZone: 'America/La_Paz',
+    }).format(new Date(report.createdAt)),
+    image: report.imageUrls[0] || categoryImages[category],
+    person: name,
+    initials: name
+      .trim()
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((part) => part[0])
+      .join('')
+      .toLocaleUpperCase('es'),
+    color: 'lavender',
+    resolved: report.state === 'resolved',
   }
 }
 
@@ -36,7 +67,10 @@ export interface CatalogFilters {
 }
 
 export const defaultCatalogFilters: CatalogFilters = {
-  search: '', city: 'Todas las ciudades', category: 'Todas las categorías', status: 'Todos',
+  search: '',
+  city: 'Todas las ciudades',
+  category: 'Todas las categorías',
+  status: 'Todos',
 }
 
 export class CatalogPresenter {
@@ -49,7 +83,9 @@ export class CatalogPresenter {
   getSnapshot = () => this.state
   subscribe = (listener: () => void) => {
     this.listeners.add(listener)
-    return () => { this.listeners.delete(listener) }
+    return () => {
+      this.listeners.delete(listener)
+    }
   }
 
   private setState(state: CatalogState) {
@@ -69,7 +105,9 @@ export class CatalogPresenter {
         ...(filters.search.trim() ? { q: filters.search.trim() } : {}),
         ...(filters.city !== 'Todas las ciudades' ? { city: filters.city } : {}),
         ...(category ? { category } : {}),
-        ...(filters.status !== 'Todos' ? { type: filters.status === 'Perdido' ? 'lost' : 'found' } : {}),
+        ...(filters.status !== 'Todos'
+          ? { type: filters.status === 'Perdido' ? 'lost' : 'found' }
+          : {}),
       }
     }
     this.cancel()
@@ -78,9 +116,15 @@ export class CatalogPresenter {
     this.setState({ status: 'loading', reports: [] })
     try {
       const reports = await this.client.list(this.controller.signal, { ...this.query })
-      if (request === this.request) this.setState({ status: 'ready', reports: reports.map(presentReport) })
+      if (request === this.request)
+        this.setState({ status: 'ready', reports: reports.map(presentReport) })
     } catch {
-      if (request === this.request) this.setState({ status: 'error', reports: [], message: 'No se pudo cargar el catálogo. Intenta nuevamente.' })
+      if (request === this.request)
+        this.setState({
+          status: 'error',
+          reports: [],
+          message: 'No se pudo cargar el catálogo. Intenta nuevamente.',
+        })
     }
   }
 }

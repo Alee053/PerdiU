@@ -1,4 +1,5 @@
 <!-- Guía: CONTRIBUTING.md. Completar los campos y quitar instrucciones. -->
+
 ## Resultado
 
 <!-- Qué podrá hacer el usuario y por qué lo necesita. -->
@@ -16,8 +17,8 @@ Closes #<numero>
 ## Criterios y evidencia
 
 | Criterio de la issue | Prueba o comprobación ejecutada | Resultado |
-| --- | --- | --- |
-| | | |
+| -------------------- | ------------------------------- | --------- |
+|                      |                                 |           |
 
 ## Riesgos y compatibilidad
 

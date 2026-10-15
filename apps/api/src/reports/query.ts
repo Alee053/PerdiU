@@ -8,15 +8,28 @@ export function parseReportQuery(input: Record<string, unknown>): ReportQuery {
   if (Object.keys(input).some((key) => !allowed.includes(key))) throw invalid()
   const values: Record<string, string> = {}
   for (const [key, value] of Object.entries(input)) {
-    if (typeof value !== 'string' || value.length > (key === 'q' ? 200 : 100) || /[\u0000-\u001f\u007f]/.test(value)) throw invalid()
+    if (
+      typeof value !== 'string' ||
+      value.length > (key === 'q' ? 200 : 100) ||
+      /[\u0000-\u001f\u007f]/.test(value)
+    )
+      throw invalid()
     if (value.trim()) values[key] = value.trim()
   }
   const type = values.type
   const category = values.category
   if (type !== undefined && type !== 'lost' && type !== 'found') throw invalid()
-  if (category !== undefined && category !== 'pet' && category !== 'object' && category !== 'document') throw invalid()
+  if (
+    category !== undefined &&
+    category !== 'pet' &&
+    category !== 'object' &&
+    category !== 'document'
+  )
+    throw invalid()
   return {
-    ...(values.q ? { q: values.q } : {}), ...(type ? { type } : {}),
-    ...(category ? { category } : {}), ...(values.city ? { city: values.city } : {}),
+    ...(values.q ? { q: values.q } : {}),
+    ...(type ? { type } : {}),
+    ...(category ? { category } : {}),
+    ...(values.city ? { city: values.city } : {}),
   }
 }

@@ -1,4 +1,5 @@
 <!-- Completar y quitar instrucciones. Variantes y convenciones: CONTRIBUTING.md. -->
+
 ## Resumen
 
 <!-- Problema concreto y comportamiento resultante. -->
@@ -15,8 +16,8 @@
 ## Validación
 
 | Comprobación ejecutada | Resultado |
-| --- | --- |
-| | |
+| ---------------------- | --------- |
+|                        |           |
 
 ## Riesgos y pendientes
 

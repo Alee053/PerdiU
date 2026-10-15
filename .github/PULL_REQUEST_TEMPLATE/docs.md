@@ -1,4 +1,5 @@
 <!-- Guía: CONTRIBUTING.md. Completar los campos y quitar instrucciones. -->
+
 ## Propósito
 
 <!-- Qué información faltaba o estaba desactualizada y quién la utilizará. -->
