@@ -8,3 +8,5 @@ dist/
 *.log
 .turbo/
 test-results/
+# Product requirements are maintained in docs/product/*.md; keep the source PDF local.
+/docs/PERDI U.pdf
