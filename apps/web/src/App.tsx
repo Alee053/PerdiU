@@ -14,7 +14,7 @@ import { OverviewPage } from './pages/OverviewPage'
 import { PublishPage } from './pages/PublishPage'
 import { SafetyPage } from './pages/SafetyPage'
 import { SavedPage } from './pages/SavedPage'
-import type { Category, FilterStatus, Report, ReportStatus, Section } from './types'
+import type { CatalogReport, Category, FilterStatus, Report, ReportStatus, Section } from './types'
 import { normalizeText, sectionLabels } from './utils/text'
 
 function App() {
@@ -28,6 +28,7 @@ function App() {
   const [status, setStatus] = useState<FilterStatus>('Todos')
   const [selectedReport, setSelectedReport] = useState<Report | null>(null)
   const [saved, setSaved] = useState<string[]>(['demo-3'])
+  const [savedCatalogReports, setSavedCatalogReports] = useState<CatalogReport[]>([])
   const [mobileMenu, setMobileMenu] = useState(false)
   const [notice, setNotice] = useState('')
   const [imagePreview, setImagePreview] = useState('')
@@ -49,7 +50,7 @@ function App() {
 
   const ownReports = reports.filter((report) => report.person === 'Santiago Demo')
   const catalogReports = catalogState.reports
-  const savedReports = [...catalogState.reports, ...reports].filter((report) => saved.includes(report.id) && !report.resolved)
+  const savedReports = [...savedCatalogReports, ...reports].filter((report) => saved.includes(report.id) && !report.resolved)
   const activeReports = reports.filter((report) => !report.resolved)
   const lostCount = activeReports.filter((report) => report.status === 'Perdido').length
   const foundCount = activeReports.filter((report) => report.status === 'Encontrado').length
@@ -73,6 +74,12 @@ function App() {
   }
 
   const toggleSaved = (id: string) => {
+    const report = catalogState.reports.find((item) => item.id === id)
+      ?? (selectedReport?.source === 'catalog' && selectedReport.id === id ? selectedReport : undefined)
+    setSavedCatalogReports((items) => {
+      const retained = items.filter((item) => item.id !== id)
+      return !saved.includes(id) && report ? [...retained, report] : retained
+    })
     setSaved((items) => items.includes(id) ? items.filter((item) => item !== id) : [...items, id])
     notify(saved.includes(id) ? 'Quitaste este reporte de tus guardados.' : 'Guardaste este reporte para revisarlo después.')
   }
