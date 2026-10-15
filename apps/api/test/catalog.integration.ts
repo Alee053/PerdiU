@@ -7,6 +7,12 @@ import { createPool, PostgresReportRepository } from '@perdiu/database'
 import { migrate, seed } from '@perdiu/database/maintenance'
 import { assertLocalDatabase } from '@perdiu/database/config'
 
+async function resetCatalog(pool: ReturnType<typeof createPool>) {
+  assert.equal(process.env.PERDIU_TEST_CONTAINER, '1', 'La limpieza solo se permite en el contenedor desechable.')
+  await migrate(pool)
+  await pool.query('TRUNCATE TABLE profiles CASCADE')
+}
+
 async function runDatabaseCommand(command: 'migrate' | 'seed', databaseUrl: string) {
   const code = await new Promise<number | null>((resolve, reject) => {
     const child = spawn('pnpm', [`db:${command}`], {
@@ -27,7 +33,7 @@ test('catálogo HTTP y repositorio conservan datos reales tras reiniciar, sin in
   const pool = createPool(databaseUrl)
   let app: Awaited<ReturnType<typeof createApplication>> | undefined
   try {
-    await migrate(pool)
+    await resetCatalog(pool)
     await migrate(pool)
     await runDatabaseCommand('migrate', databaseUrl)
     assert.deepEqual(await new PostgresReportRepository(pool).list(), [])
@@ -108,7 +114,11 @@ test('la búsqueda HTTP normaliza texto, combina filtros y valida entradas sobre
   assertLocalDatabase(databaseUrl)
   const pool = createPool(databaseUrl)
   let app: Awaited<ReturnType<typeof createApplication>> | undefined
+  let prepared = false
   try {
+    await resetCatalog(pool)
+    prepared = true
+    await seed(pool)
     await pool.query(await readFile(new URL('../../../packages/database/test/fixtures/search.sql', import.meta.url), 'utf8'))
     app = await createApplication(databaseUrl)
     await app.listen(0, '127.0.0.1')
@@ -153,7 +163,7 @@ test('la búsqueda HTTP normaliza texto, combina filtros y valida entradas sobre
     assert.equal((await (await fetch(endpoint)).json()).length, 50)
   } finally {
     await app?.close()
-    await pool.query("DELETE FROM reports WHERE id::text LIKE '30000000-%' OR id::text LIKE '40000000-%'")
+    if (prepared) await pool.query("DELETE FROM reports WHERE id::text LIKE '30000000-%' OR id::text LIKE '40000000-%'")
     await pool.end()
   }
 })

@@ -19,12 +19,32 @@ test('el catálogo se ordena por creación descendente y por ID ascendente en em
   assert.deepEqual(result.map(({ id }) => id), ['new', 'a', 'b', 'old'])
 })
 
-test('el visitante ve activos y resolver un hallazgo conserva su tipo', async () => {
+test('el visitante solo ve activos y su proyección conserva el tipo de hallazgo', async () => {
   const reports = [record('active'), record('closed', { state: 'resolved' })]
   const result = await new ListReports({ list: async () => reports }).execute()
   assert.deepEqual(result.map(({ id, type, state }) => ({ id, type, state })), [
     { id: 'active', type: 'found', state: 'active' },
   ])
+})
+
+test('el caso de uso transmite los filtros al puerto de búsqueda', async () => {
+  const query = { q: 'camara', type: 'lost', category: 'object', city: 'La Paz' } as const
+  let received: unknown
+  const result = await new ListReports({ list: async (filters) => {
+    received = filters
+    return []
+  } }).execute(query)
+  assert.deepEqual(received, query)
+  assert.deepEqual(result, [])
+})
+
+test('el máximo de 50 se aplica después de excluir resueltos y ordenar', async () => {
+  const reports = Array.from({ length: 60 }, (_, index) => record(String(index).padStart(2, '0'))).reverse()
+  reports.unshift(record('resolved', { state: 'resolved', createdAt: '2026-10-15T12:00:00.000Z' }))
+  const result = await new ListReports({ list: async () => reports }).execute()
+  assert.equal(result.length, 50)
+  assert.equal(result[0]!.id, '00')
+  assert.equal(result[49]!.id, '49')
 })
 
 test('la proyección pública excluye contacto, identidad privada y claves de almacenamiento', async () => {

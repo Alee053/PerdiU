@@ -1,5 +1,12 @@
 import { spawn } from 'node:child_process'
 import { randomBytes } from 'node:crypto'
+import { parseArgs } from 'node:util'
+
+const { values } = parseArgs({ options: {
+  'with-browser': { type: 'boolean', default: false },
+  'test-name-pattern': { type: 'string' },
+} })
+if (values['with-browser'] && values['test-name-pattern']) throw new Error('La aceptación completa no admite un filtro de pruebas.')
 
 export async function run(command, args, env = {}, capture = false) {
   return new Promise((resolve, reject) => {
@@ -35,8 +42,11 @@ try {
   const port = mapping.match(/^127\.0\.0\.1:(\d+)$/)?.[1]
   if (!port) throw new Error('No se pudo determinar el puerto local de PostgreSQL de pruebas.')
   const env = { TEST_DATABASE_URL: `postgresql://perdiu:${password}@127.0.0.1:${port}/perdiu_test`, PERDIU_TEST_CONTAINER: '1', NODE_ENV: 'test' }
-  await run('pnpm', ['exec', 'turbo', 'run', 'test:integration', '--filter=@perdiu/api'], env)
-  if (process.argv.includes('--with-browser')) {
+  if (values['test-name-pattern']) {
+    await run('pnpm', ['exec', 'turbo', 'run', 'build', '--filter=@perdiu/api'])
+    await run('pnpm', ['--filter', '@perdiu/api', 'exec', 'tsx', '--test', `--test-name-pattern=${values['test-name-pattern']}`, 'test/catalog.integration.ts'], env)
+  } else await run('pnpm', ['exec', 'turbo', 'run', 'test:integration', '--filter=@perdiu/api'], env)
+  if (values['with-browser']) {
     await run('pnpm', ['build'], { VITE_API_BASE_URL: '/api' })
     await run(process.execPath, ['scripts/browser-catalog.mjs'], env)
   }
