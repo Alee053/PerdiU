@@ -20,7 +20,7 @@ El agente realiza esta revisión como parte de la entrega, sin esperar otra peti
 
 ## Formato y comprobación
 
-Cada skill tiene una carpeta con el mismo nombre y un `SKILL.md` con `name` y `description` YAML de una línea, más instrucciones breves y enlaces relativos a fuentes canónicas. El nombre usa minúsculas y guiones, máximo 64 caracteres. La selección implícita queda habilitada; `$perdiu-workflow` también permite invocarla explícitamente. Los cambios en skills deben validarse con ejemplos de tareas reales, además de frontmatter/enlaces; no probar que una frase exacta siga existiendo.
+Cada skill tiene una carpeta con el mismo nombre y un `SKILL.md` con `name` y `description` YAML de una línea, más instrucciones breves y enlaces relativos a fuentes canónicas. El checker admite solo esas dos claves, sin duplicados: texto simple que empieza con una letra, comillas simples YAML (duplicar `'` interior) o comillas dobles con escapes JSON. Usar comillas si hay `: ` o ` #`; no usar números/booleanos sin comillas, estructuras, bloques ni campos adicionales. El nombre usa minúsculas y guiones, máximo 64 caracteres. La selección implícita queda habilitada; `$perdiu-workflow` también permite invocarla explícitamente. Los cambios en skills deben validarse con ejemplos de tareas reales, además de frontmatter/enlaces; no probar que una frase exacta siga existiendo.
 
 El checker admite enlaces Markdown en línea y de referencia, ignora ejemplos en bloques de código, no contacta URLs externas y no comprueba fragmentos de encabezados. Verificar esos elementos cuando se modifican. No incorpora dependencias globales ni copia las skills personales de un colaborador.
 

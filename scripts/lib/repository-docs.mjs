@@ -6,6 +6,47 @@ function outside(root, path) {
   return part === '..' || part.startsWith('..' + sep) || isAbsolute(part)
 }
 
+// A deliberately small YAML subset: two unique keys and single-line text scalars.
+function textScalar(value) {
+  let text
+  if (value.startsWith('"')) {
+    try {
+      text = JSON.parse(value)
+    } catch {
+      return undefined
+    }
+  } else if (value.startsWith("'")) {
+    if (!/^'(?:[^']|'')*'$/.test(value)) return undefined
+    text = value.slice(1, -1).replaceAll("''", "'")
+  } else {
+    if (
+      !/^\p{L}/u.test(value) ||
+      /:\s|:$|\s#/.test(value) ||
+      /^(?:null|true|false|yes|no|on|off)$/i.test(value)
+    )
+      return undefined
+    text = value
+  }
+  if (typeof text !== 'string' || /[\u0000-\u001f\u007f-\u009f\u2028\u2029]/u.test(text))
+    return undefined
+  return text
+}
+
+function skillMetadata(source) {
+  const frontmatter = source.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/)?.[1]
+  if (!frontmatter) return undefined
+  const metadata = {}
+  for (const line of frontmatter.split(/\r?\n/)) {
+    if (/^[ \t]*(?:#.*)?$/.test(line)) continue
+    const field = line.match(/^(name|description):[ \t]+(.+)$/)
+    if (!field || Object.hasOwn(metadata, field[1])) return undefined
+    const value = textScalar(field[2].trim())
+    if (value === undefined) return undefined
+    metadata[field[1]] = value
+  }
+  return metadata
+}
+
 export async function checkDocuments(root, documents) {
   const base = await realpath(root)
   const errors = []
@@ -17,14 +58,12 @@ export async function checkDocuments(root, documents) {
     }
     const source = await readFile(path, 'utf8')
     if (basename(path) === 'SKILL.md') {
-      const frontmatter = source.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/)?.[1]
-      const field = (name) =>
-        frontmatter
-          ?.match(new RegExp(`^${name}:[ \\t]*(.+)$`, 'm'))?.[1]
-          .trim()
-          .replace(/^(['"])(.*)\1$/, '$2')
-      const name = field('name')
-      const description = field('description')
+      const metadata = skillMetadata(source)
+      if (!metadata)
+        errors.push(
+          `${document}: frontmatter inválido; usar name y description de texto en una línea.`,
+        )
+      const { name, description } = metadata ?? {}
       if (
         !name ||
         name !== basename(dirname(path)) ||
@@ -32,8 +71,7 @@ export async function checkDocuments(root, documents) {
         !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(name)
       )
         errors.push(`${document}: nombre de skill inválido o distinto de su carpeta.`)
-      if (!description || /^(?:[>|\[\{]|null$|true$|false$)/.test(description))
-        errors.push(`${document}: falta una descripción de texto en una línea.`)
+      if (!description) errors.push(`${document}: falta una descripción de texto en una línea.`)
     }
     const prose = source.replace(/^```[^\n]*\n[\s\S]*?^```\s*$/gm, '').replace(/`[^`\n]*`/g, '')
     const links = [...prose.matchAll(/!?\[[^\]\n]*\]\((<[^>]+>|[^)\s]+)(?:\s+"[^"]*")?\)/g)].map(

@@ -41,6 +41,42 @@ test('los enlaces de referencia rotos también se detectan', async () => {
   }
 })
 
+test('la metadata rechaza YAML inválido y valores que no son texto', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'perdiu-docs-'))
+  const skill = '.agents/skills/perdiu-demo/SKILL.md'
+  try {
+    await mkdir(join(root, '.agents/skills/perdiu-demo'), { recursive: true })
+    for (const description of [
+      'Reglas: usar el flujo de PerdiU.',
+      '123',
+      'true',
+      'null',
+      '[usar, revisar]',
+      'Usar reglas.\nunknown: [',
+      'Usar reglas.\ndescription: Otro texto.',
+    ]) {
+      await writeFile(
+        join(root, skill),
+        `---\nname: perdiu-demo\ndescription: ${description}\n---\n# Skill\n`,
+      )
+      assert.ok((await checkDocuments(root, [skill])).length > 0, description)
+    }
+    for (const description of [
+      '"123"',
+      "'Reglas: usar el flujo de PerdiU.'",
+      "'Texto con ''comillas''.'",
+    ]) {
+      await writeFile(
+        join(root, skill),
+        `---\nname: perdiu-demo\ndescription: ${description}\n---\n# Skill\n`,
+      )
+      assert.deepEqual(await checkDocuments(root, [skill]), [], description)
+    }
+  } finally {
+    await rm(root, { recursive: true, force: true })
+  }
+})
+
 test('documentos y skills válidos admiten enlaces anclados y ejemplos sin contactar la red', async () => {
   const root = await mkdtemp(join(tmpdir(), 'perdiu-docs-'))
   try {
