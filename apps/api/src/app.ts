@@ -1,18 +1,20 @@
 import 'reflect-metadata'
-import { Controller, Get, Inject, Module, ServiceUnavailableException } from '@nestjs/common'
+import { Controller, Get, Inject, Module, Query, ServiceUnavailableException } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { createPool } from './database.js'
 import { ListReports } from './reports/catalog.js'
 import { PostgresReportRepository } from './reports/postgres-repository.js'
+import { parseReportQuery } from './reports/query.js'
 
 @Controller('reports')
 class ReportsController {
   constructor(@Inject(ListReports) private readonly catalog: ListReports) {}
 
   @Get()
-  async list() {
+  async list(@Query() input: Record<string, unknown>) {
+    const query = parseReportQuery(input)
     try {
-      return await this.catalog.execute()
+      return await this.catalog.execute(query)
     } catch {
       throw new ServiceUnavailableException('No se pudo cargar el catálogo. Intenta nuevamente.')
     }

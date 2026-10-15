@@ -1,4 +1,5 @@
-import type { ReportSummary } from '@perdiu/contracts'
+import type { ReportQuery, ReportSummary } from '@perdiu/contracts'
+import { REPORT_RESULT_LIMIT } from '@perdiu/contracts'
 import type { ReportRepository } from './model.js'
 
 function microsecondRemainder(timestamp: string) {
@@ -9,12 +10,13 @@ function microsecondRemainder(timestamp: string) {
 export class ListReports {
   constructor(private readonly repository: ReportRepository) {}
 
-  async execute(): Promise<ReportSummary[]> {
-    return (await this.repository.list())
+  async execute(query: ReportQuery = {}): Promise<ReportSummary[]> {
+    return (await this.repository.list(query))
       .filter((report) => report.state === 'active')
       .sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)
         || microsecondRemainder(b.createdAt) - microsecondRemainder(a.createdAt)
         || (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))
+      .slice(0, REPORT_RESULT_LIMIT)
       .map((report) => ({
         id: report.id, title: report.title, description: report.description,
         type: report.type, state: report.state, category: report.category,

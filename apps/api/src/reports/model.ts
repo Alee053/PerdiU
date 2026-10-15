@@ -1,4 +1,4 @@
-import type { PublicProfile, ReportData } from '@perdiu/contracts'
+import type { PublicProfile, ReportData, ReportQuery } from '@perdiu/contracts'
 
 export interface ReportRecord extends ReportData {
   author: PublicProfile
@@ -6,5 +6,5 @@ export interface ReportRecord extends ReportData {
 }
 
 export interface ReportRepository {
-  list(): Promise<ReportRecord[]>
+  list(query?: ReportQuery): Promise<ReportRecord[]>
 }
