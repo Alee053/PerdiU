@@ -3,6 +3,15 @@ export type ReportType = 'lost' | 'found'
 export type ReportState = 'active' | 'resolved'
 export type ReportCategory = 'pet' | 'object' | 'document'
 
+export interface ReportQuery {
+  q?: string
+  type?: ReportType
+  category?: ReportCategory
+  city?: string
+}
+
+export const REPORT_RESULT_LIMIT = 50
+
 export interface ReportData {
   id: string
   ownerId: string

@@ -4,7 +4,7 @@ import { CheckCircle2, X } from 'lucide-react'
 import { AppHeader } from './components/layout/AppHeader'
 import { Sidebar } from './components/layout/Sidebar'
 import { createReportsClient } from './catalog/client'
-import { CatalogPresenter, filterCatalog } from './catalog/presenter'
+import { CatalogPresenter, defaultCatalogFilters } from './catalog/presenter'
 import { ReportDetail } from './components/reports/ReportDetail'
 import { fallbackReportImage, initialReports } from './data/reports'
 import { ExplorePage } from './pages/ExplorePage'
@@ -14,16 +14,12 @@ import { OverviewPage } from './pages/OverviewPage'
 import { PublishPage } from './pages/PublishPage'
 import { SafetyPage } from './pages/SafetyPage'
 import { SavedPage } from './pages/SavedPage'
-import type { Category, FilterStatus, Report, ReportStatus, Section } from './types'
+import type { CatalogReport, Category, FilterStatus, Report, ReportStatus, Section } from './types'
 import { normalizeText, sectionLabels } from './utils/text'
 
 function App() {
   const [catalog] = useState(() => new CatalogPresenter(createReportsClient(import.meta.env.VITE_API_BASE_URL || '/api')))
   const catalogState = useSyncExternalStore(catalog.subscribe, catalog.getSnapshot)
-  useEffect(() => {
-    void catalog.load()
-    return () => catalog.cancel()
-  }, [catalog])
   const [section, setSection] = useState<Section>('overview')
   const [reports, setReports] = useState<Report[]>(initialReports)
   const [search, setSearch] = useState('')
@@ -32,10 +28,16 @@ function App() {
   const [status, setStatus] = useState<FilterStatus>('Todos')
   const [selectedReport, setSelectedReport] = useState<Report | null>(null)
   const [saved, setSaved] = useState<string[]>(['demo-3'])
+  const [savedCatalogReports, setSavedCatalogReports] = useState<CatalogReport[]>([])
   const [mobileMenu, setMobileMenu] = useState(false)
   const [notice, setNotice] = useState('')
   const [imagePreview, setImagePreview] = useState('')
   const [postStatus, setPostStatus] = useState<ReportStatus>('Perdido')
+
+  useEffect(() => {
+    void catalog.load({ search, city, category, status })
+    return () => catalog.cancel()
+  }, [catalog, search, city, category, status])
 
   const filteredReports = useMemo(() => reports.filter((report) => {
     const text = normalizeText(report.title + ' ' + report.description + ' ' + report.zone + ' ' + report.city)
@@ -47,8 +49,8 @@ function App() {
   }), [reports, search, city, category, status])
 
   const ownReports = reports.filter((report) => report.person === 'Santiago Demo')
-  const catalogReports = useMemo(() => filterCatalog(catalogState.reports, { search, city, category, status }), [catalogState.reports, search, city, category, status])
-  const savedReports = [...catalogState.reports, ...reports].filter((report) => saved.includes(report.id) && !report.resolved)
+  const catalogReports = catalogState.reports
+  const savedReports = [...savedCatalogReports, ...reports].filter((report) => saved.includes(report.id) && !report.resolved)
   const activeReports = reports.filter((report) => !report.resolved)
   const lostCount = activeReports.filter((report) => report.status === 'Perdido').length
   const foundCount = activeReports.filter((report) => report.status === 'Encontrado').length
@@ -72,6 +74,12 @@ function App() {
   }
 
   const toggleSaved = (id: string) => {
+    const report = catalogState.reports.find((item) => item.id === id)
+      ?? (selectedReport?.source === 'catalog' && selectedReport.id === id ? selectedReport : undefined)
+    setSavedCatalogReports((items) => {
+      const retained = items.filter((item) => item.id !== id)
+      return !saved.includes(id) && report ? [...retained, report] : retained
+    })
     setSaved((items) => items.includes(id) ? items.filter((item) => item !== id) : [...items, id])
     notify(saved.includes(id) ? 'Quitaste este reporte de tus guardados.' : 'Guardaste este reporte para revisarlo después.')
   }
@@ -118,10 +126,10 @@ function App() {
   }
 
   const resetFilters = () => {
-    setSearch('')
-    setCity('Todas las ciudades')
-    setCategory('Todas las categorías')
-    setStatus('Todos')
+    setSearch(defaultCatalogFilters.search)
+    setCity(defaultCatalogFilters.city)
+    setCategory(defaultCatalogFilters.category)
+    setStatus(defaultCatalogFilters.status)
   }
 
   const resolveReport = (report: Report) => {

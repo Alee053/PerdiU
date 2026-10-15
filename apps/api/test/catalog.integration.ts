@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import { spawn } from 'node:child_process'
+import { readFile } from 'node:fs/promises'
 import { test } from 'node:test'
 import { createApplication } from '../src/app.js'
 import { assertLocalDatabase } from '../src/config.js'
@@ -96,5 +97,62 @@ test('el proceso falla con diagnóstico seguro ante configuración ausente o con
     assert.ok(!result.output.includes('startup-secret-sentinel'))
     assert.ok(!result.output.includes('postgresql://'))
     assert.match(result.output, /DATABASE_URL|No se pudo iniciar la API/)
+  }
+})
+
+test('la búsqueda HTTP normaliza texto, combina filtros y valida entradas sobre PostgreSQL', async () => {
+  assert.equal(process.env.PERDIU_TEST_CONTAINER, '1')
+  const databaseUrl = process.env.TEST_DATABASE_URL
+  assert.ok(databaseUrl)
+  assertLocalDatabase(databaseUrl)
+  const pool = createPool(databaseUrl)
+  let app: Awaited<ReturnType<typeof createApplication>> | undefined
+  try {
+    await pool.query(await readFile(new URL('./fixtures/search.sql', import.meta.url), 'utf8'))
+    app = await createApplication(databaseUrl)
+    await app.listen(0, '127.0.0.1')
+    const endpoint = `${await app.getUrl()}/reports`
+    for (const q of ['camara', 'CÁMARA', 'ca\u0301mara', '  camara  ']) {
+      const response = await fetch(`${endpoint}?${new URLSearchParams({ q })}`)
+      assert.equal(response.status, 200)
+      const reports = await response.json()
+      assert.deepEqual(reports.map((report: { id: string }) => report.id), [
+        '30000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000002',
+      ])
+    }
+    for (const [query, expected] of [
+      [{ q: 'camara', type: 'lost', category: 'object', city: 'La Paz' }, ['30000000-0000-0000-0000-000000000001']],
+      [{ q: 'camara', type: 'found', category: 'pet', city: 'Cochabamba' }, ['30000000-0000-0000-0000-000000000002']],
+      [{ category: 'document', city: 'La Paz' }, ['30000000-0000-0000-0000-000000000003']],
+      [{ q: 'camara', category: 'document' }, []],
+      [{ q: 'camara', city: 'Santa Cruz' }, []],
+      [{ q: 'Centro' }, []],
+      [{ q: "O'Reilly" }, ['30000000-0000-0000-0000-000000000004']],
+      [{ q: '%_' }, ['30000000-0000-0000-0000-000000000004']],
+      [{ q: "' OR true --" }, []],
+    ] satisfies [Record<string, string>, string[]][]) {
+      const response = await fetch(`${endpoint}?${new URLSearchParams(query)}`)
+      assert.equal(response.status, 200)
+      assert.deepEqual((await response.json()).map((report: { id: string }) => report.id), expected)
+    }
+    for (const query of [
+      'type=resolved', 'category=invalid', 'type=lost&type=found', 'q=a&q=b', 'q[x]=a',
+      'city=' + 'x'.repeat(101), 'q=' + 'x'.repeat(201), 'q=%00', 'limit=100',
+    ]) {
+      const response = await fetch(`${endpoint}?${query}`)
+      assert.equal(response.status, 400, query)
+      assert.equal((await response.json()).message, 'Parámetros de búsqueda inválidos.')
+    }
+    assert.deepEqual(await (await fetch(`${endpoint}?q=%20%20`)).json(), await (await fetch(endpoint)).json())
+    await pool.query(await readFile(new URL('./fixtures/limit.sql', import.meta.url), 'utf8'))
+    const limited = await (await fetch(`${endpoint}?q=limite`)).json()
+    assert.equal(limited.length, 50)
+    assert.equal(limited[0].id, '40000000-0000-0000-0000-000000000001')
+    assert.equal(limited[49].id, '40000000-0000-0000-0000-000000000050')
+    assert.equal((await (await fetch(endpoint)).json()).length, 50)
+  } finally {
+    await app?.close()
+    await pool.query("DELETE FROM reports WHERE id::text LIKE '30000000-%' OR id::text LIKE '40000000-%'")
+    await pool.end()
   }
 })
