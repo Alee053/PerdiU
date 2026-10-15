@@ -144,13 +144,7 @@ test('la búsqueda HTTP normaliza texto, combina filtros y valida entradas sobre
       assert.equal((await response.json()).message, 'Parámetros de búsqueda inválidos.')
     }
     assert.deepEqual(await (await fetch(`${endpoint}?q=%20%20`)).json(), await (await fetch(endpoint)).json())
-    await pool.query(`
-      INSERT INTO reports (id, owner_id, type, state, category, title, description, city, zone, incident_date, created_at)
-      SELECT ('40000000-0000-0000-0000-' || lpad(n::text, 12, '0'))::uuid,
-        '10000000-0000-0000-0000-000000000001', 'found', 'active', 'object',
-        'Límite de prueba ' || n, 'Registro ficticio.', 'La Paz', 'Centro', '2026-10-10', '2026-10-15T12:00:00Z'
-      FROM generate_series(1, 60) n
-    `)
+    await pool.query(await readFile(new URL('./fixtures/limit.sql', import.meta.url), 'utf8'))
     const limited = await (await fetch(`${endpoint}?q=limite`)).json()
     assert.equal(limited.length, 50)
     assert.equal(limited[0].id, '40000000-0000-0000-0000-000000000001')

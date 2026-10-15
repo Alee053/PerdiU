@@ -50,7 +50,7 @@ La interfaz abre directamente en un dashboard. La barra lateral separa Resumen, 
 - `apps/api`: catálogo público NestJS con persistencia en PostgreSQL independiente.
 - `packages/contracts`: tipos compartidos para los reportes y perfiles públicos.
 
-«Explorar reportes» consulta `GET /reports` de PostgreSQL a través del proxy `/api` de Vite. Distingue carga, error con reintento, catálogo vacío y búsqueda sin coincidencias. No usa datos demo como fallback. La búsqueda y los filtros existentes operan sobre el catálogo recibido; sus consultas del servidor corresponden a S1-02. El detalle abierto desde este catálogo muestra únicamente datos públicos, sin contacto ni controles de propietario. Las imágenes ausentes usan SVG locales por categoría; el mapa ilustrativo pertenece a la demo.
+«Explorar reportes» consulta `GET /reports` de PostgreSQL a través del proxy `/api` de Vite. La búsqueda por título/descripción ignora mayúsculas y tildes y se combina en el servidor con tipo, categoría y ciudad. Cada consulta devuelve hasta 50 reportes activos, del más reciente al más antiguo; al alcanzar el límite, la interfaz sugiere ajustar los filtros. «Limpiar filtros» restablece el catálogo y los controles; las consultas anteriores se cancelan y sus respuestas se descartan. Distingue carga, error con reintento de la misma búsqueda, catálogo vacío y búsqueda sin coincidencias con acceso a publicación. No usa datos demo como fallback. El detalle abierto desde este catálogo muestra únicamente datos públicos, sin contacto ni controles de propietario. Las imágenes ausentes usan SVG locales por categoría; el mapa ilustrativo pertenece a la demo.
 
 Resumen, Publicar, Mis reportes, Guardados y perfil conservan sus flujos de demostración: no hay Auth ni escrituras persistentes desde la web. Los guardados solo viven en memoria. Los reportes/telefonía demo y el seed son ficticios; el seed incluye un autor «Santiago Demo» para comprobar que su nombre no concede permisos. Las fotos y tipografías demo usan Unsplash y Google Fonts.
 
@@ -64,6 +64,6 @@ pnpm test:integration
 pnpm test:e2e
 ```
 
-Las dos últimas órdenes crean y eliminan un PostgreSQL aislado con credenciales efímeras, sin requerir `.env` ni modificar la base de desarrollo. `test:e2e` también inicia API/web en puertos libres y usa Chromium para comprobar carga, búsqueda, privacidad, error/reintento, vacío, reinicio y móvil. Usa Chromium del sistema (`/usr/bin/chromium`) o define `CHROMIUM_PATH`; si no tienes uno, instala el navegador local de Playwright con `pnpm exec playwright install chromium`. Las capturas quedan en `test-results/`, ignorado por Git.
+Las dos últimas órdenes crean y eliminan un PostgreSQL aislado con credenciales efímeras, sin requerir `.env` ni modificar la base de desarrollo. `test:e2e` también inicia API/web en puertos libres y usa Chromium para comprobar carga, búsqueda sin tildes, filtros combinados, limpieza, límite, privacidad, error/reintento, vacío, reinicio y recorridos de móvil/escritorio. Usa Chromium del sistema (`/usr/bin/chromium`) o define `CHROMIUM_PATH`; si no tienes uno, instala el navegador local de Playwright con `pnpm exec playwright install chromium`. Las capturas quedan en `test-results/`, ignorado por Git.
 
-Consulta [la API](apps/api/README.md) y [la evidencia de S1-01](docs/validation/s1-01.md).
+Consulta [la API](apps/api/README.md), [la evidencia de S1-01](docs/validation/s1-01.md) y [la de S1-02](docs/validation/s1-02.md).
