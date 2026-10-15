@@ -1,9 +1,8 @@
 import 'reflect-metadata'
 import { Controller, Get, Inject, Module, Query, ServiceUnavailableException } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
-import { createPool } from './database.js'
-import { ListReports } from './reports/catalog.js'
-import { PostgresReportRepository } from './reports/postgres-repository.js'
+import { createPool, PostgresReportRepository } from '@perdiu/database'
+import { ListReports } from '@perdiu/catalog'
 import { parseReportQuery } from './reports/query.js'
 
 @Controller('reports')

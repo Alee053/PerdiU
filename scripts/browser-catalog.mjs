@@ -4,8 +4,8 @@ import { existsSync } from 'node:fs'
 import { mkdir, readFile } from 'node:fs/promises'
 import { createServer } from 'node:net'
 import { chromium } from 'playwright'
-import { createPool } from '../apps/api/dist/database.js'
-import { assertLocalDatabase } from '../apps/api/dist/config.js'
+import { createPool } from '@perdiu/database'
+import { assertLocalDatabase } from '@perdiu/database/config'
 
 async function freePort() {
   const server = createServer()
@@ -226,7 +226,7 @@ try {
   await page.evaluate(() => Promise.all(document.getAnimations().filter((animation) => animation.effect?.getTiming().iterations !== Infinity).map((animation) => animation.finished)))
   await page.screenshot({ path: 'test-results/catalog-mobile.png', fullPage: true })
 
-  await pool.query(await readFile(new URL('../apps/api/test/fixtures/search.sql', import.meta.url), 'utf8'))
+  await pool.query(await readFile(new URL('../packages/database/test/fixtures/search.sql', import.meta.url), 'utf8'))
   // Start a fresh page for each viewport so acceptance does not depend on previous controls.
   for (const [size, viewport] of [['desktop', { width: 1440, height: 1000 }], ['mobile', { width: 390, height: 844 }]]) {
     await page.close()
@@ -239,7 +239,7 @@ try {
     await verifySearch(page, size)
   }
 
-  await pool.query(await readFile(new URL('../apps/api/test/fixtures/limit.sql', import.meta.url), 'utf8'))
+  await pool.query(await readFile(new URL('../packages/database/test/fixtures/limit.sql', import.meta.url), 'utf8'))
   await page.getByRole('button', { name: 'Limpiar filtros', exact: true }).click()
   await page.getByRole('status').filter({ hasText: 'Se muestran hasta 50 resultados' }).waitFor()
   assert.equal(await page.locator('.report-card').count(), 50)

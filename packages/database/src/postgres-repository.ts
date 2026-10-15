@@ -1,6 +1,6 @@
 import type { Pool } from 'pg'
 import { REPORT_RESULT_LIMIT, type ReportQuery } from '@perdiu/contracts'
-import type { ReportRecord, ReportRepository } from './model.js'
+import type { ReportRecord, ReportRepository } from '@perdiu/catalog'
 
 export class PostgresReportRepository implements ReportRepository {
   constructor(private readonly pool: Pool) {}

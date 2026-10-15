@@ -13,12 +13,13 @@
     "test:e2e": "node scripts/verify-catalog.mjs --with-browser",
     "db:up": "docker compose up -d --wait",
     "db:down": "docker compose down",
-    "db:migrate": "pnpm --filter @perdiu/api db:migrate",
-    "db:seed": "pnpm --filter @perdiu/api db:seed",
+    "db:migrate": "turbo run db:migrate --filter=@perdiu/database",
+    "db:seed": "turbo run db:seed --filter=@perdiu/database",
     "preview": "pnpm --filter @perdiu/web preview"
   },
   "devDependencies": {
     "playwright": "^1.64.0",
-    "turbo": "^2.11.7"
+    "turbo": "^2.11.7",
+    "@perdiu/database": "workspace:*"
   }
 }

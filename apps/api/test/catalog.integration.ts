@@ -3,13 +3,13 @@ import { spawn } from 'node:child_process'
 import { readFile } from 'node:fs/promises'
 import { test } from 'node:test'
 import { createApplication } from '../src/app.js'
-import { assertLocalDatabase } from '../src/config.js'
-import { createPool, migrate, seed } from '../src/database.js'
-import { PostgresReportRepository } from '../src/reports/postgres-repository.js'
+import { createPool, PostgresReportRepository } from '@perdiu/database'
+import { migrate, seed } from '@perdiu/database/maintenance'
+import { assertLocalDatabase } from '@perdiu/database/config'
 
 async function runDatabaseCommand(command: 'migrate' | 'seed', databaseUrl: string) {
   const code = await new Promise<number | null>((resolve, reject) => {
-    const child = spawn(process.execPath, ['--import', 'tsx', 'scripts/database.ts', command], {
+    const child = spawn(process.execPath, ['../../packages/database/dist/cli.js', command], {
       env: { ...process.env, DATABASE_URL: databaseUrl, NODE_ENV: 'test' }, stdio: 'ignore',
     })
     child.on('error', reject)
@@ -108,7 +108,7 @@ test('la búsqueda HTTP normaliza texto, combina filtros y valida entradas sobre
   const pool = createPool(databaseUrl)
   let app: Awaited<ReturnType<typeof createApplication>> | undefined
   try {
-    await pool.query(await readFile(new URL('./fixtures/search.sql', import.meta.url), 'utf8'))
+    await pool.query(await readFile(new URL('../../../packages/database/test/fixtures/search.sql', import.meta.url), 'utf8'))
     app = await createApplication(databaseUrl)
     await app.listen(0, '127.0.0.1')
     const endpoint = `${await app.getUrl()}/reports`
@@ -144,7 +144,7 @@ test('la búsqueda HTTP normaliza texto, combina filtros y valida entradas sobre
       assert.equal((await response.json()).message, 'Parámetros de búsqueda inválidos.')
     }
     assert.deepEqual(await (await fetch(`${endpoint}?q=%20%20`)).json(), await (await fetch(endpoint)).json())
-    await pool.query(await readFile(new URL('./fixtures/limit.sql', import.meta.url), 'utf8'))
+    await pool.query(await readFile(new URL('../../../packages/database/test/fixtures/limit.sql', import.meta.url), 'utf8'))
     const limited = await (await fetch(`${endpoint}?q=limite`)).json()
     assert.equal(limited.length, 50)
     assert.equal(limited[0].id, '40000000-0000-0000-0000-000000000001')

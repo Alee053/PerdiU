@@ -1,14 +1,8 @@
 import { readFile } from 'node:fs/promises'
-import { Pool } from 'pg'
-
-export function createPool(databaseUrl: string) {
-  const pool = new Pool({ connectionString: databaseUrl, connectionTimeoutMillis: 5000, statement_timeout: 10000 })
-  pool.on('error', () => console.error('PostgreSQL no está disponible; se cerró una conexión inactiva.'))
-  return pool
-}
+import type { Pool } from 'pg'
 
 export async function migrate(pool: Pool) {
-  const sql = await readFile(new URL('../sql/001_catalog.sql', import.meta.url), 'utf8')
+  const sql = await readFile(new URL('../migrations/001_catalog.sql', import.meta.url), 'utf8')
   const client = await pool.connect()
   try {
     await client.query('BEGIN')
@@ -29,7 +23,7 @@ export async function migrate(pool: Pool) {
 }
 
 export async function seed(pool: Pool) {
-  const sql = await readFile(new URL('../sql/seed.sql', import.meta.url), 'utf8')
+  const sql = await readFile(new URL('../seeds/development.sql', import.meta.url), 'utf8')
   const client = await pool.connect()
   try {
     await client.query('BEGIN')

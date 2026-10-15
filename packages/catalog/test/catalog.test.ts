@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { ListReports } from '../src/reports/catalog.js'
-import type { ReportRecord } from '../src/reports/model.js'
+import { ListReports } from '../src/index.js'
+import type { ReportRecord } from '../src/index.js'
 
 const record = (id: string, overrides: Partial<ReportRecord> = {}): ReportRecord => ({
   id, ownerId: 'owner-1', type: 'found', state: 'active', category: 'object',

@@ -1,0 +1,38 @@
+{
+  "name": "@perdiu/database",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./maintenance": {
+      "types": "./dist/maintenance.d.ts",
+      "import": "./dist/maintenance.js"
+    },
+    "./config": {
+      "types": "./dist/config.d.ts",
+      "import": "./dist/config.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.check.json",
+    "test": "tsx --test test/*.test.ts",
+    "db:migrate": "node dist/cli.js migrate",
+    "db:seed": "node dist/cli.js seed"
+  },
+  "dependencies": {
+    "@perdiu/catalog": "workspace:*",
+    "@perdiu/contracts": "workspace:*",
+    "pg": "^8.23.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.5",
+    "tsx": "^4.23.15",
+    "typescript": "7.0.2",
+    "@types/pg": "^8.23.1"
+  }
+}
