@@ -28,3 +28,13 @@
 - [ ] Se justificó la necesidad del cambio y de sus dependencias.
 - [ ] Migraciones/mutaciones probadas en una base aislada, si aplica.
 - [ ] Procedimientos y ejemplos actualizados; issue/tablero coherentes.
+
+## Impacto documental
+
+- [ ] Revisé el mapa de mantenimiento y actualicé documentación/skills afectadas en esta PR, o expliqué por qué no hay impacto.
+
+<!-- Arquitectura, contratos, comandos, pruebas, servicios y convenciones. Ver docs/agent-workflow.md. -->
+
+## Evidencia de comportamiento
+
+<!-- Si cambia comportamiento: interfaz/criterio, fallo inicial o caracterización y comando realmente ejecutado. Para docs/formato, indicar No aplica con motivo. -->

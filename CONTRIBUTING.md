@@ -38,7 +38,7 @@ El scope y el número de issue son opcionales cuando no aplican; el identificado
 | `ci`       | Automatización de integración continua.        |
 | `chore`    | Mantenimiento que no encaja en los anteriores. |
 
-Scopes habituales: `web`, `api`, `contracts`, `catalog`, `repo`. Nombrar el área afectada sin inventar etiquetas para cada archivo.
+Scopes habituales: `web`, `api`, `contracts`, `catalog`, `database`, `repo`. Nombrar el área afectada sin inventar etiquetas para cada archivo.
 
 Crear commits progresivos que representen pasos coherentes y verificables. Evitar mensajes como «cambios», «final», «fix stuff» o la narración de la conversación. No reescribir commits ya compartidos sin acuerdo.
 
@@ -140,13 +140,27 @@ Pedir revisión a otra persona. El autor explica las decisiones y atiende hallaz
 
 Actualizar documentación y ejemplos si cambia una interfaz, configuración, migración o procedimiento de arranque. Las migraciones nuevas no reescriben migraciones aplicadas; las mutaciones se verifican en bases locales aisladas. Cambios de datos compartidos, permisos o despliegue requieren autorización específica.
 
-## Qué falta acordar antes de ampliar el equipo
+## Política de integración y calidad
 
-Estas son propuestas, no configuraciones activadas:
+`master` requiere PR, checks `quality` y `acceptance` aprobados y una aprobación humana de otra persona, incluidos administradores. Los checks se ejecutan sobre la revisión actual; un push nuevo invalida aprobaciones anteriores. Mantener resueltas las conversaciones, actualizar la rama respecto a `master` y no usar force-push ni eliminar la rama protegida. No hay bypass permanente de emergencia: cualquier excepción necesita una decisión explícita del equipo. El repositorio conserva los métodos de merge existentes; no reescribir historial compartido. Después de un merge, usar `git pull --ff-only` desde un `master` limpio y crear la siguiente rama desde la base actualizada.
 
-1. **Protección de `master`:** exigir PR, aprobación de otra persona y checks; evitar pushes directos y force-push. Acordar quién puede integrar y las excepciones de emergencia.
-2. **CI y estilo:** ejecutar pruebas, typecheck y build en PRs; añadir integración aislada y decidir formatter/linter antes de hacerlos obligatorios. `.editorconfig` ya unifica indentación y finales de línea.
-3. **Responsabilidad:** asignar responsables/revisores de web, API y contratos; añadir `CODEOWNERS` cuando estén confirmados, con especial cuidado de las interfaces compartidas.
-4. **Criterios de entrega:** acordar Definition of Ready/Done, tamaño de PR, política de merge y cómo registrar pruebas manuales, bloqueos y cambios de alcance.
-5. **Contratos y datos:** acordar formatos de error HTTP, validación de entrada, convenciones de nombres/fechas, evolución de DTOs, migraciones y datos ficticios. Mantener una guía de acceso a entornos y gestión de secretos sin guardar sus valores.
-6. **Issues y versiones:** templates de historias/bugs, etiquetas y prioridades compartidas, ADRs para decisiones de arquitectura y una política de versiones/changelog cuando haya entregas desplegadas.
+CI tiene dos trabajos con nombres estables: `quality` ejecuta `pnpm verify`, y `acceptance` instala Chromium y ejecuta `pnpm test:e2e` (ya incluye integración/build). No usa secretos de proveedores ni el evento `pull_request_target`. Los workflows usan permisos mínimos, acciones fijadas a commits, cancelación de ejecuciones obsoletas y artefactos de capturas limitados. La configuración vive en `.github/workflows/ci.yml`; comprobar los resultados reales de la PR, no solo que exista el archivo.
+
+El formatter único es Prettier, fijado en el lockfile; respetar su configuración y EditorConfig. `pnpm format` escribe y `pnpm format:check` verifica. Las migraciones aplicadas y transcripciones históricas conservan su contenido; no reformatearlas. TypeScript y `check:boundaries` completan las comprobaciones estáticas actuales. No añadir otro linter o framework de tests sin una necesidad concreta.
+
+## Ready, Done y documentación
+
+Una issue está **Ready** cuando tiene responsable, comportamiento/problema observable, criterios comprobables, alcance, dependencias y enfoque de pruebas. Usar los formularios de historia, bug o mantenimiento. Para historias de sprint conservar `[Sx-yy]`; otras issues pueden usar `bug: <resultado>` o `chore: <objetivo>`. Las issues creadas con `gh` deben aportar los mismos campos; verificar manualmente la tarjeta en Projects en lugar de asumir autoasignación.
+
+Un cambio está listo para **In review** cuando cumple los criterios, tiene regresiones y validación proporcionales, diff revisado, documentación/skills sincronizadas y PR vinculada. La issue pasa a **Done** al integrarse, aceptarse y comprobar cierre/estado del proyecto. Los bloqueos reales y las pruebas no ejecutadas se explican; las PRs incompletas permanecen Draft y en progreso.
+
+Para comportamiento nuevo o correcciones, seguir [TDD y verificación](docs/testing.md): interfaces públicas, un ejemplo red→green cada vez y refactor con pruebas verdes. Caracterización inicialmente verde es válida para comportamiento existente. En la PR, registrar el fallo inicial/regresión o caracterización, sin inventar evidencia. Evitar cuotas de cobertura y duplicación de cada caso en todos los niveles.
+
+Antes de entregar, aplicar la [sincronización de instrucciones](docs/agent-workflow.md). El [mapa de impacto](docs/maintenance-map.json) indica documentos/skills a contrastar; actualizar instrucciones y referencias obsoletas dentro de la misma PR, o justificar ausencia de impacto. `pnpm check:docs --since origin/master` informa qué revisar. El check estructural no sustituye la revisión del contenido.
+
+## Seguimientos acordados
+
+- Asignar CODEOWNERS cuando el equipo confirme responsables por área; por ahora se pide revisión a otra persona con acceso, sin inventar ownership.
+- Documentar Auth/R2, callbacks y accesos al implementar sus historias, según [servicios](docs/services.md). No provisionar recursos ni añadir credenciales por completar plantillas.
+- Registrar ADRs para decisiones de arquitectura significativas; no exigirlos para cada cambio pequeño.
+- Definir releases/changelog cuando existan entregas versionadas. La política de merge uniforme podrá acordarse después; los commits de trabajo siguen siendo progresivos.

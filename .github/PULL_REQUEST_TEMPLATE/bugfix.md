@@ -29,3 +29,13 @@ Closes #<numero>
 - [ ] La reproducción original queda resuelta y se cubrió una regresión relevante.
 - [ ] Issue y estado del tablero actualizados según el alcance real.
 - [ ] La solución no oculta errores ni introduce un fallback ficticio.
+
+## Impacto documental
+
+- [ ] Revisé el mapa de mantenimiento y actualicé documentación/skills afectadas en esta PR, o expliqué por qué no hay impacto.
+
+<!-- Arquitectura, contratos, comandos, pruebas, servicios y convenciones. Ver docs/agent-workflow.md. -->
+
+## Evidencia de comportamiento
+
+<!-- Si cambia comportamiento: interfaz/criterio, fallo inicial o caracterización y comando realmente ejecutado. Para docs/formato, indicar No aplica con motivo. -->

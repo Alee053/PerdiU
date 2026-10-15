@@ -8,7 +8,7 @@ NestJS con PostgreSQL independiente y consultas parametrizadas mediante `pg`. El
 
 El autor público tiene ID (sujeto de Auth), nombre y foto opcional. Los contactos están en tablas privadas; ni esos datos ni claves de almacenamiento se consultan para el catálogo. Una lista vacía devuelve `200 []`; fallos de consulta devuelven `503` con mensaje seguro en español. No hay autenticación ni endpoints de escritura en esta historia.
 
-La API se ocupa de HTTP, validación y composición. `ListReports`, en `@perdiu/catalog`, aplica los invariantes y la proyección pública. `PostgresReportRepository`, en `@perdiu/database`, adapta SQL al modelo. La API abre la base mediante `openDatabase` y registra su cierre al apagar. El SQL filtra y ordena para reducir trabajo; el caso de uso conserva los invariantes al sustituir ese adapter. Consulta las [responsabilidades por workspace](../../docs/architecture.md).
+La API se ocupa de HTTP, validación y composición. `ListReports`, en `@perdiu/catalog`, garantiza activos, orden, límite y proyección pública. El puerto exige que su adapter aplique los predicados de búsqueda antes de limitar resultados; normalización y filtros pertenecen a `PostgresReportRepository`, en `@perdiu/database`. La API abre la base mediante `openDatabase` y registra su cierre al apagar. Consulta las [responsabilidades por workspace](../../docs/architecture.md) y [pruebas por interfaz](../../docs/testing.md).
 
 ### Buscar y filtrar
 

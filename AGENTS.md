@@ -1,5 +1,12 @@
 # Agent skills
 
+## Repository workflows
+
+- For issue work, branches, commits or PRs, read [.agents/skills/perdiu-workflow/SKILL.md](.agents/skills/perdiu-workflow/SKILL.md).
+- For contracts, persistence, workspace ownership or dependencies, read [.agents/skills/perdiu-architecture/SKILL.md](.agents/skills/perdiu-architecture/SKILL.md).
+- For behavior or test-tooling changes, read [.agents/skills/perdiu-testing/SKILL.md](.agents/skills/perdiu-testing/SKILL.md) and use vertical TDD at public interfaces.
+- Before delivery, read [.agents/skills/perdiu-docs-sync/SKILL.md](.agents/skills/perdiu-docs-sync/SKILL.md); update affected docs and skill instructions in the same PR. Review sources rather than copying their rules.
+
 ## Contributions
 
 Before naming a branch/PR, choosing a template, linking an issue/project, or preparing commits, read [CONTRIBUTING.md](CONTRIBUTING.md). Describe changes and verification; omit AI/tool attribution and co-author trailers from PRs, commits and project evidence.

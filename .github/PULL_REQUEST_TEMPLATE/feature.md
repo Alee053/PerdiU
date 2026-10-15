@@ -30,3 +30,13 @@ Closes #<numero>
 - [ ] La lógica y el recorrido afectados tienen verificación pertinente.
 - [ ] Cambios visuales comprobados en móvil/escritorio, si aplica.
 - [ ] Documentación y ejemplos actualizados cuando cambió el uso del sistema.
+
+## Impacto documental
+
+- [ ] Revisé el mapa de mantenimiento y actualicé documentación/skills afectadas en esta PR, o expliqué por qué no hay impacto.
+
+<!-- Arquitectura, contratos, comandos, pruebas, servicios y convenciones. Ver docs/agent-workflow.md. -->
+
+## Evidencia de comportamiento
+
+<!-- Si cambia comportamiento: interfaz/criterio, fallo inicial o caracterización y comando realmente ejecutado. Para docs/formato, indicar No aplica con motivo. -->
