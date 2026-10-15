@@ -85,3 +85,61 @@ test('el cliente HTTP rechaza respuestas erróneas, IDs numéricos, fechas y URL
   const failed = createReportsClient('/api', async () => new Response('', { status: 503 }))
   await assert.rejects(failed.list(new AbortController().signal), { message: 'No se pudo consultar el catálogo.' })
 })
+
+test('la búsqueda del presenter combina selecciones, reintenta la misma consulta y limpiar restaura el catálogo', async () => {
+  const queries: unknown[] = []
+  let fail = true
+  const presenter = new CatalogPresenter({ list: async (_signal, query) => {
+    queries.push(query)
+    if (fail) throw new Error('network')
+    return [summary]
+  } })
+  await presenter.load({ search: '  CÁMARA  ', city: 'La Paz', category: 'Objeto', status: 'Perdido' })
+  assert.equal(presenter.getSnapshot().status, 'error')
+  fail = false
+  await presenter.load()
+  assert.equal(presenter.getSnapshot().status, 'ready')
+  await presenter.load({ search: '', city: 'Todas las ciudades', category: 'Todas las categorías', status: 'Todos' })
+  assert.deepEqual(queries, [
+    { q: 'CÁMARA', city: 'La Paz', category: 'object', type: 'lost' },
+    { q: 'CÁMARA', city: 'La Paz', category: 'object', type: 'lost' }, {},
+  ])
+})
+
+test('el cliente codifica texto y filtros como parámetros HTTP y omite los filtros ausentes', async () => {
+  const requests: string[] = []
+  const controller = new AbortController()
+  const client = createReportsClient('/api/', async (input, init) => {
+    requests.push(String(input))
+    assert.equal(init?.signal, controller.signal)
+    return new Response('[]')
+  })
+  await client.list(controller.signal, { q: "Cámara O'Reilly & 100%_", type: 'found', category: 'object', city: 'La Paz' })
+  await client.list(controller.signal)
+  const url = new URL(requests[0]!, 'http://localhost')
+  assert.equal(url.pathname, '/api/reports')
+  assert.deepEqual(Object.fromEntries(url.searchParams), { q: "Cámara O'Reilly & 100%_", type: 'found', category: 'object', city: 'La Paz' })
+  assert.equal(requests[1], '/api/reports')
+})
+
+test('cambiar texto o filtros cancela la consulta anterior y descarta tanto su resultado como su error', async () => {
+  for (const staleFails of [false, true]) {
+    let finishOld!: (reports: ReportSummary[]) => void
+    let failOld!: (error: Error) => void
+    const old = new Promise<ReportSummary[]>((resolve, reject) => { finishOld = resolve; failOld = reject })
+    const signals: AbortSignal[] = []
+    const presenter = new CatalogPresenter({ list: async (signal, query) => {
+      signals.push(signal)
+      return query?.q === 'camara' ? old : [summary]
+    } })
+    const previous = presenter.load({ search: 'camara', city: 'Todas las ciudades', category: 'Todas las categorías', status: 'Todos' })
+    await presenter.load({ search: 'mochila', city: 'La Paz', category: 'Objeto', status: 'Encontrado' })
+    assert.equal(signals[0]!.aborted, true)
+    assert.equal(signals[1]!.aborted, false)
+    if (staleFails) failOld(new Error('stale-error'))
+    else finishOld([])
+    await previous
+    assert.equal(presenter.getSnapshot().status, 'ready')
+    assert.deepEqual(presenter.getSnapshot().reports.map(({ id }) => id), [summary.id])
+  }
+})

@@ -10,7 +10,7 @@ export function ReportSearch({ value, onChange, placeholder = 'Buscar por nombre
   return (
     <label className="explore-search">
       <Search size={17} />
-      <input value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} aria-label="Buscar reportes" />
+      <input value={value} onChange={(event) => onChange(event.target.value)} placeholder={placeholder} aria-label="Buscar reportes" maxLength={200} />
       <kbd>⌘ K</kbd>
     </label>
   )

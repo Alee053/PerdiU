@@ -1,6 +1,5 @@
-import type { ReportCategory, ReportSummary } from '@perdiu/contracts'
+import type { ReportCategory, ReportQuery, ReportSummary } from '@perdiu/contracts'
 import type { CatalogReport, Category, FilterStatus } from '../types.js'
-import { normalizeText } from '../utils/text.js'
 
 export type CatalogState =
   | { status: 'loading'; reports: CatalogReport[] }
@@ -9,6 +8,7 @@ export type CatalogState =
 
 export const categoryImages = { Mascota: '/images/pet.svg', Objeto: '/images/object.svg', Documentos: '/images/document.svg' }
 const categories: Record<ReportCategory, Category> = { pet: 'Mascota', object: 'Objeto', document: 'Documentos' }
+const categoryValues: Partial<Record<string, ReportCategory>> = { Mascota: 'pet', Objeto: 'object', Documentos: 'document' }
 
 function presentReport(report: ReportSummary): CatalogReport {
   const category = categories[report.category]
@@ -25,7 +25,18 @@ function presentReport(report: ReportSummary): CatalogReport {
 }
 
 export interface ReportsClient {
-  list(signal: AbortSignal): Promise<ReportSummary[]>
+  list(signal: AbortSignal, query?: ReportQuery): Promise<ReportSummary[]>
+}
+
+export interface CatalogFilters {
+  search: string
+  city: string
+  category: string
+  status: FilterStatus
+}
+
+export const defaultCatalogFilters: CatalogFilters = {
+  search: '', city: 'Todas las ciudades', category: 'Todas las categorías', status: 'Todos',
 }
 
 export class CatalogPresenter {
@@ -33,6 +44,7 @@ export class CatalogPresenter {
   private listeners = new Set<() => void>()
   private request = 0
   private controller?: AbortController
+  private query: ReportQuery = {}
   constructor(private readonly client: ReportsClient) {}
   getSnapshot = () => this.state
   subscribe = (listener: () => void) => {
@@ -50,27 +62,25 @@ export class CatalogPresenter {
     this.controller?.abort()
   }
 
-  async load() {
+  async load(filters?: CatalogFilters) {
+    if (filters) {
+      const category = categoryValues[filters.category]
+      this.query = {
+        ...(filters.search.trim() ? { q: filters.search.trim() } : {}),
+        ...(filters.city !== 'Todas las ciudades' ? { city: filters.city } : {}),
+        ...(category ? { category } : {}),
+        ...(filters.status !== 'Todos' ? { type: filters.status === 'Perdido' ? 'lost' : 'found' } : {}),
+      }
+    }
     this.cancel()
     const request = this.request
     this.controller = new AbortController()
     this.setState({ status: 'loading', reports: [] })
     try {
-      const reports = await this.client.list(this.controller.signal)
+      const reports = await this.client.list(this.controller.signal, { ...this.query })
       if (request === this.request) this.setState({ status: 'ready', reports: reports.map(presentReport) })
     } catch {
       if (request === this.request) this.setState({ status: 'error', reports: [], message: 'No se pudo cargar el catálogo. Intenta nuevamente.' })
     }
   }
-}
-
-/** Keep existing demo filters usable until S1-02 introduces server queries. */
-export function filterCatalog(reports: CatalogReport[], filters: { search: string; city: string; category: string; status: FilterStatus }) {
-  return reports.filter((report) => {
-    const text = normalizeText([report.title, report.description, report.zone, report.city].join(' '))
-    return (!filters.search || text.includes(normalizeText(filters.search)))
-      && (filters.city === 'Todas las ciudades' || report.city === filters.city)
-      && (filters.category === 'Todas las categorías' || report.category === filters.category)
-      && (filters.status === 'Todos' || report.status === filters.status)
-  })
 }

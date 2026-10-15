@@ -4,7 +4,7 @@ import { CheckCircle2, X } from 'lucide-react'
 import { AppHeader } from './components/layout/AppHeader'
 import { Sidebar } from './components/layout/Sidebar'
 import { createReportsClient } from './catalog/client'
-import { CatalogPresenter, filterCatalog } from './catalog/presenter'
+import { CatalogPresenter, defaultCatalogFilters } from './catalog/presenter'
 import { ReportDetail } from './components/reports/ReportDetail'
 import { fallbackReportImage, initialReports } from './data/reports'
 import { ExplorePage } from './pages/ExplorePage'
@@ -20,10 +20,6 @@ import { normalizeText, sectionLabels } from './utils/text'
 function App() {
   const [catalog] = useState(() => new CatalogPresenter(createReportsClient(import.meta.env.VITE_API_BASE_URL || '/api')))
   const catalogState = useSyncExternalStore(catalog.subscribe, catalog.getSnapshot)
-  useEffect(() => {
-    void catalog.load()
-    return () => catalog.cancel()
-  }, [catalog])
   const [section, setSection] = useState<Section>('overview')
   const [reports, setReports] = useState<Report[]>(initialReports)
   const [search, setSearch] = useState('')
@@ -37,6 +33,11 @@ function App() {
   const [imagePreview, setImagePreview] = useState('')
   const [postStatus, setPostStatus] = useState<ReportStatus>('Perdido')
 
+  useEffect(() => {
+    void catalog.load({ search, city, category, status })
+    return () => catalog.cancel()
+  }, [catalog, search, city, category, status])
+
   const filteredReports = useMemo(() => reports.filter((report) => {
     const text = normalizeText(report.title + ' ' + report.description + ' ' + report.zone + ' ' + report.city)
     return !report.resolved
@@ -47,7 +48,7 @@ function App() {
   }), [reports, search, city, category, status])
 
   const ownReports = reports.filter((report) => report.person === 'Santiago Demo')
-  const catalogReports = useMemo(() => filterCatalog(catalogState.reports, { search, city, category, status }), [catalogState.reports, search, city, category, status])
+  const catalogReports = catalogState.reports
   const savedReports = [...catalogState.reports, ...reports].filter((report) => saved.includes(report.id) && !report.resolved)
   const activeReports = reports.filter((report) => !report.resolved)
   const lostCount = activeReports.filter((report) => report.status === 'Perdido').length
@@ -118,10 +119,10 @@ function App() {
   }
 
   const resetFilters = () => {
-    setSearch('')
-    setCity('Todas las ciudades')
-    setCategory('Todas las categorías')
-    setStatus('Todos')
+    setSearch(defaultCatalogFilters.search)
+    setCity(defaultCatalogFilters.city)
+    setCategory(defaultCatalogFilters.category)
+    setStatus(defaultCatalogFilters.status)
   }
 
   const resolveReport = (report: Report) => {
