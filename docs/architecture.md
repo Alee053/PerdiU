@@ -19,6 +19,7 @@ La API combina `ListReports` con `openDatabase().reports` y llama `close` al apa
 - Mantener la configuración HTTP en la API y `DATABASE_URL`/protección de mutaciones en `database`. El CLI de migraciones funciona sin un puerto HTTP válido y sin iniciar NestJS.
 - Poner pruebas unitarias junto al workspace que posee el comportamiento. Mantener pruebas del recorrido HTTP en la API y orquestación E2E en `scripts/`.
 - Mantener Compose en la raíz, donde se orquesta el entorno local completo. Los contenedores desechables de aceptación también se orquestan desde la raíz.
+- Los paquetes compartidos se compilan en watch durante `pnpm dev`; el watcher de la API incluye sus builds para reiniciar cuando cambia una dependencia.
 - Crear otro paquete cuando tenga una responsabilidad y consumidores claros. Una carpeta o función pequeña dentro de su dueño actual no requiere otro workspace.
 
 `pnpm check:boundaries` verifica el grafo de workspaces, dependencias de infraestructura prohibidas, independencia de los módulos puros e imports ESM literales entre paquetes mediante exports públicos. Al añadir un workspace, definir su regla en `scripts/check-boundaries.mjs`. Los imports calculados y el contenido semántico de las funciones requieren revisión; este check complementa las pruebas y la revisión de código.

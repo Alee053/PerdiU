@@ -11,6 +11,7 @@ Verificación del 15 de octubre de 2026 sobre `master`, después de integrar S1-
 - `pnpm test:integration`: PostgreSQL 17 desechable; una prueba de migraciones y tres de HTTP/configuración, todas aprobadas.
 - `pnpm test:e2e`: migraciones, HTTP, build y recorrido API/web/Chromium en escritorio y móvil aprobados. Incluye búsqueda, filtros, privacidad, errores/reintento, guardados y límite.
 - `pnpm check:boundaries`: grafo permitido y exports públicos verificados. Pruebas diagnósticas temporales confirmaron que rechaza importar BD desde web, rutas privadas entre apps e imports de `dist` no exportados; los archivos diagnósticos se retiraron.
+- Desarrollo: un diagnóstico temporal reprodujo que `tsx watch` no reaccionaba a cambios de los paquetes extraídos. Se añadieron globs explícitos de `catalog`, `database` y `contracts`; se comprobó el reinicio del consumidor al cambiar cada build y se retiraron los procesos/archivos del diagnóstico.
 
 ## Persistencia y compatibilidad
 
